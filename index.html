@@ -13,10 +13,9 @@
         <span class="brand-mark" aria-hidden="true">◆</span>
         <div>
           <h1>Hosted-Agent Sample Finder</h1>
-          <p class="tagline">Answer a few questions and land on the right Microsoft Foundry hosted-agent sample.</p>
+          <p class="tagline">Expand the questions to narrow down the right Microsoft Foundry hosted-agent sample.</p>
         </div>
       </div>
-      <div class="header-stats" id="headerStats" aria-live="polite"></div>
     </div>
   </header>
 
@@ -28,14 +27,15 @@
   <main class="wrap">
     <!-- Guide (decision tree) view -->
     <section id="view-guide" class="view" aria-labelledby="tab-guide">
-      <div class="breadcrumbs" id="breadcrumbs" aria-label="Your path"></div>
-
-      <div id="guideNode" class="guide-node"></div>
-
-      <div class="guide-controls">
-        <button id="btnBack" class="btn btn-ghost" disabled>← Back</button>
-        <button id="btnRestart" class="btn btn-ghost">↺ Start over</button>
+      <div class="guide-toolbar">
+        <p class="guide-intro">Start at the top. Each choice shows how many samples sit beneath it — expand the path that fits.</p>
+        <div class="guide-controls">
+          <button id="btnExpandAll" class="btn btn-ghost btn-sm">Expand all</button>
+          <button id="btnCollapseAll" class="btn btn-ghost btn-sm">Collapse all</button>
+        </div>
       </div>
+
+      <div id="guideTree" class="guide-tree"></div>
     </section>
 
     <!-- Browse view -->

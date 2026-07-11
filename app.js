@@ -1,5 +1,9 @@
 /* Foundry Hosted-Agent Sample Finder — vanilla JS, no build step.
  *
+ * Guide view: a single-page accordion. The whole decision tree stays on one
+ * page; expanding a choice reveals the next question (nested) or the matching
+ * samples inline. Every choice shows how many distinct samples sit beneath it.
+ *
  * Data loading: prefers window.HA_SAMPLES / window.HA_TREE injected by the
  * generated data/*.js shims (so the page works when opened via file://).
  * Falls back to fetching data/*.json when served over http(s).
@@ -47,14 +51,13 @@ const state = {
   byId: new Map(),
   tree: null,
   view: "guide",
-  history: [], // node ids, last is current
+  open: new Set(), // expanded accordion path keys
 };
 
 async function loadData() {
   let samplesDoc = window.HA_SAMPLES;
   let treeDoc = window.HA_TREE;
   if (!samplesDoc || !treeDoc) {
-    // Served over http(s): fetch the canonical JSON.
     const [s, t] = await Promise.all([
       fetch("data/samples.json").then((r) => r.json()),
       fetch("data/tree.json").then((r) => r.json()),
@@ -72,24 +75,31 @@ function repoUrl(sample) {
   return state.meta.repoBaseUrl + sample.path;
 }
 
-/* ---------- header + footer ---------- */
-function renderHeader() {
-  const agents = state.samples.filter((s) => s.kind !== "client").length;
-  const fw = Object.keys(state.meta.frameworks).length;
-  const proto = Object.keys(state.meta.protocols).length;
-  const stats = document.getElementById("headerStats");
-  stats.innerHTML = "";
-  const items = [
-    [agents, "samples"],
-    [fw, "frameworks"],
-    [proto, "protocols"],
-  ];
-  for (const [n, label] of items) {
-    stats.appendChild(el("div", { class: "stat" }, [el("b", { text: String(n) }), el("span", { text: label })]));
+/* ---------- sample counts (distinct, deduped, memoized) ---------- */
+const _reachMemo = new Map();
+function reachSet(nodeId, stack) {
+  if (_reachMemo.has(nodeId)) return _reachMemo.get(nodeId);
+  if (stack.has(nodeId)) return new Set(); // cycle guard (tree has none, but be safe)
+  const node = state.tree.nodes[nodeId];
+  let s;
+  if (!node) {
+    s = new Set();
+  } else if (node.type === "result") {
+    s = new Set(node.sampleIds || []);
+  } else {
+    s = new Set();
+    const next = new Set(stack);
+    next.add(nodeId);
+    for (const o of node.options) for (const id of reachSet(o.next, next)) s.add(id);
   }
-  document.getElementById("sourceRepo").textContent = state.meta.source;
-  const rootLink = document.getElementById("rootLink");
-  rootLink.href = state.meta.repoBaseUrl;
+  _reachMemo.set(nodeId, s);
+  return s;
+}
+function countFor(nodeId) {
+  return reachSet(nodeId, new Set()).size;
+}
+function countLabel(n) {
+  return `${n} ${n === 1 ? "sample" : "samples"}`;
 }
 
 /* ---------- sample card ---------- */
@@ -118,99 +128,86 @@ function sampleCard(sample) {
   ]);
 }
 
-/* ---------- guide (decision tree) ---------- */
-function currentNodeId() {
-  return state.history[state.history.length - 1];
+/* ---------- guide accordion ---------- */
+function toggle(key) {
+  if (state.open.has(key)) state.open.delete(key);
+  else state.open.add(key);
+  renderTree();
 }
 
-function go(nodeId) {
-  state.history.push(nodeId);
-  renderGuide();
-}
+function renderOptions(questionNode, depth, pathKey) {
+  const list = el("div", { class: "acc-list" });
+  questionNode.options.forEach((opt, i) => {
+    const childKey = `${pathKey}>${i}`;
+    const childNode = state.tree.nodes[opt.next];
+    const isOpen = state.open.has(childKey);
+    const isResult = childNode && childNode.type === "result";
+    const count = countFor(opt.next);
 
-function jumpTo(index) {
-  state.history = state.history.slice(0, index + 1);
-  renderGuide();
-}
-
-function back() {
-  if (state.history.length > 1) {
-    state.history.pop();
-    renderGuide();
-  }
-}
-
-function restart() {
-  state.history = [state.tree.meta.rootId];
-  renderGuide();
-}
-
-function renderBreadcrumbs() {
-  const bc = document.getElementById("breadcrumbs");
-  bc.innerHTML = "";
-  state.history.forEach((nid, i) => {
-    const node = state.tree.nodes[nid];
-    const label = node ? node.breadcrumb || node.title : nid;
-    const isCurrent = i === state.history.length - 1;
-    if (i > 0) bc.appendChild(el("span", { class: "sep", text: "›" }));
-    bc.appendChild(
-      el("span", {
-        class: "crumb" + (isCurrent ? " current" : ""),
-        text: label,
-        onclick: isCurrent ? null : () => jumpTo(i),
-      })
+    const row = el(
+      "button",
+      { class: "acc-row", "aria-expanded": String(isOpen), onclick: () => toggle(childKey) },
+      [
+        el("span", { class: "caret" + (isOpen ? " open" : ""), "aria-hidden": "true", text: "▸" }),
+        el("span", { class: "acc-label" }, [
+          el("b", { text: opt.label }),
+          opt.description ? el("span", { class: "acc-desc", text: opt.description }) : null,
+        ]),
+        el("span", { class: "badge count" + (isResult ? " leaf" : ""), text: countLabel(count) }),
+      ]
     );
+
+    const item = el("div", { class: "acc-item", dataset: { depth: String(depth) } }, [row]);
+
+    if (isOpen && childNode) {
+      const panel = el("div", { class: "acc-panel" });
+      if (childNode.type === "question") {
+        if (childNode.title) panel.appendChild(el("p", { class: "nested-q", text: childNode.title }));
+        if (childNode.help) panel.appendChild(el("p", { class: "help", text: childNode.help }));
+        panel.appendChild(renderOptions(childNode, depth + 1, childKey));
+      } else {
+        if (childNode.intro) panel.appendChild(el("p", { class: "result-intro", text: childNode.intro }));
+        const samples = (childNode.sampleIds || []).map((id) => state.byId.get(id)).filter(Boolean);
+        const grid = el("div", { class: "card-grid" }, samples.map(sampleCard));
+        if (!samples.length) grid.appendChild(el("div", { class: "empty", text: "No samples mapped to this result." }));
+        panel.appendChild(grid);
+      }
+      item.appendChild(panel);
+    }
+    list.appendChild(item);
   });
+  return list;
 }
 
-function renderGuide() {
-  renderBreadcrumbs();
-  const host = document.getElementById("guideNode");
+function renderTree() {
+  const host = document.getElementById("guideTree");
   host.innerHTML = "";
-
-  const node = state.tree.nodes[currentNodeId()];
-  if (!node) {
-    host.appendChild(el("div", { class: "empty", text: "That path isn't wired up yet." }));
+  const root = state.tree.nodes[state.tree.meta.rootId];
+  if (!root) {
+    host.appendChild(el("div", { class: "empty", text: "Decision tree failed to load." }));
     return;
   }
+  host.appendChild(
+    el("div", { class: "tree-question-head" }, [
+      el("h2", { text: root.title }),
+      root.help ? el("p", { class: "help", text: root.help }) : null,
+    ])
+  );
+  host.appendChild(renderOptions(root, 0, "root"));
+}
 
-  if (node.type === "question") {
-    const options = el(
-      "div",
-      { class: "options" },
-      node.options.map((opt) =>
-        el("button", { class: "option", onclick: () => go(opt.next) }, [
-          el("span", { class: "opt-arrow", text: "→" }),
-          el("span", { class: "opt-body" }, [
-            el("b", { text: opt.label }),
-            opt.description ? el("span", { text: opt.description }) : null,
-          ]),
-        ])
-      )
-    );
-    host.appendChild(
-      el("div", { class: "question-card" }, [
-        el("div", { class: "step-label", text: node.breadcrumb || "Question" }),
-        el("h2", { text: node.title }),
-        node.help ? el("p", { class: "help", text: node.help }) : null,
-        options,
-      ])
-    );
-  } else if (node.type === "result") {
-    const samples = (node.sampleIds || []).map((id) => state.byId.get(id)).filter(Boolean);
-    host.appendChild(
-      el("div", { class: "result-head" }, [
-        el("div", { class: "step-label", text: samples.length === 1 ? "Recommended sample" : `Recommended samples (${samples.length})` }),
-        el("h2", { text: node.breadcrumb || "Your match" }),
-        node.intro ? el("p", { text: node.intro }) : null,
-      ])
-    );
-    const grid = el("div", { class: "card-grid" }, samples.map(sampleCard));
-    if (!samples.length) grid.appendChild(el("div", { class: "empty", text: "No samples mapped to this result." }));
-    host.appendChild(grid);
-  }
-
-  document.getElementById("btnBack").disabled = state.history.length <= 1;
+function allKeys() {
+  const keys = new Set();
+  const walk = (node, pathKey) => {
+    if (!node || node.type !== "question") return;
+    node.options.forEach((opt, i) => {
+      const k = `${pathKey}>${i}`;
+      keys.add(k);
+      walk(state.tree.nodes[opt.next], k);
+    });
+  };
+  walk(state.tree.nodes[state.tree.meta.rootId], "root");
+  return keys;
 }
 
 /* ---------- browse ---------- */
@@ -223,26 +220,10 @@ function populateFilters() {
     sel.appendChild(el("option", { value: "", text: allLabel }));
     for (const [value, label] of entries) sel.appendChild(el("option", { value, text: label }));
   };
-  mk(
-    "f-framework",
-    Object.keys(state.meta.frameworks).map((k) => [k, SHORT_FRAMEWORK[k] || k]),
-    "All frameworks"
-  );
-  mk(
-    "f-protocol",
-    PROTOCOL_ORDER.filter((k) => state.meta.protocols[k]).map((k) => [k, SHORT_PROTOCOL[k] || k]),
-    "All protocols"
-  );
-  mk(
-    "f-category",
-    Object.entries(state.meta.categories),
-    "All categories"
-  );
-  mk(
-    "f-level",
-    LEVEL_ORDER.map((k) => [k, k[0].toUpperCase() + k.slice(1)]),
-    "All levels"
-  );
+  mk("f-framework", Object.keys(state.meta.frameworks).map((k) => [k, SHORT_FRAMEWORK[k] || k]), "All frameworks");
+  mk("f-protocol", PROTOCOL_ORDER.filter((k) => state.meta.protocols[k]).map((k) => [k, SHORT_PROTOCOL[k] || k]), "All protocols");
+  mk("f-category", Object.entries(state.meta.categories), "All categories");
+  mk("f-level", LEVEL_ORDER.map((k) => [k, k[0].toUpperCase() + k.slice(1)]), "All levels");
 }
 
 function filterSamples() {
@@ -308,24 +289,35 @@ function wireTabs() {
   document.querySelectorAll(".tab").forEach((t) => t.addEventListener("click", () => setView(t.dataset.view)));
 }
 
+/* ---------- footer ---------- */
+function setupFooter() {
+  document.getElementById("sourceRepo").textContent = state.meta.source;
+  document.getElementById("rootLink").href = state.meta.repoBaseUrl;
+}
+
 /* ---------- boot ---------- */
 async function main() {
   try {
     await loadData();
   } catch (err) {
-    document.getElementById("guideNode").appendChild(
+    document.getElementById("guideTree").appendChild(
       el("div", { class: "empty", html: `Could not load data. If you opened this file directly and see this, run <code>python -m http.server</code> in this folder and reload.<br><br>${String(err)}` })
     );
     return;
   }
-  renderHeader();
+  setupFooter();
   populateFilters();
   wireBrowse();
   wireTabs();
-  document.getElementById("btnBack").addEventListener("click", back);
-  document.getElementById("btnRestart").addEventListener("click", restart);
-  state.history = [state.tree.meta.rootId];
-  renderGuide();
+  document.getElementById("btnExpandAll").addEventListener("click", () => {
+    state.open = allKeys();
+    renderTree();
+  });
+  document.getElementById("btnCollapseAll").addEventListener("click", () => {
+    state.open.clear();
+    renderTree();
+  });
+  renderTree();
   setView("guide");
 }
 

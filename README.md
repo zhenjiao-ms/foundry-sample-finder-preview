@@ -29,6 +29,18 @@ framework (e.g. Voice Live and WebSocket transports are Bring-Your-Own only;
 the Teams/Activity channel is Agent-Framework only). Every leaf resolves to one
 or more real samples in the catalog.
 
+### Single-page accordion (no step-by-step wizard)
+
+The guide renders the **entire tree on one page** as a nested accordion rather
+than walking users through separate pages one question at a time. A page-per-step
+flow tested poorly in production (high drop-off at each step), so here you just
+expand the branch you care about and drill in place; nothing navigates away.
+
+Every choice shows a **sample count** — how many distinct samples sit beneath it
+(e.g. the root reads *20 / 9 / 33 / 3*) — so you can see where the content is
+before committing to a branch. **Expand all / Collapse all** reveal or hide the
+whole tree at once.
+
 There's also a **Browse all samples** tab: full-text search plus
 framework / protocol / category / level filters over the whole catalog, for
 users who'd rather scan than be guided.
@@ -40,7 +52,7 @@ users who'd rather scan than be guided.
 ```
 index.html          # shell: header, tabs, guide + browse views
 styles.css          # light, card-based UI
-app.js              # vanilla-JS renderer (tree wizard + browse/filter)
+app.js              # vanilla-JS renderer (accordion guide + counts + browse/filter)
 data/
   samples.json      # canonical flat catalog (source of truth)
   tree.json         # canonical decision graph (source of truth)
