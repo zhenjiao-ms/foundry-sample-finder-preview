@@ -30,8 +30,8 @@
           "next": "lg-interaction"
         },
         {
-          "label": "I'm bringing another SDK or my own stack",
-          "description": "Any other framework — the OpenAI Agents SDK, Anthropic Claude Agent SDK, GitHub Copilot SDK, CrewAI, real-time voice stacks, or fully custom code — hosted with the Foundry server SDKs.",
+          "label": "I'm bringing a model SDK or another framework",
+          "description": "Start native — call a Foundry model directly with just a model SDK, no agent framework — or bring the OpenAI Agents SDK, Anthropic Claude Agent SDK, GitHub Copilot SDK, or fully custom code, all hosted with the Foundry server SDKs.",
           "next": "byo-start"
         }
       ]
@@ -473,9 +473,10 @@
       "id": "lg-chat-result",
       "type": "result",
       "breadcrumb": "Chat",
-      "intro": "A minimal LangGraph agent with two local tools and multi-turn conversation.",
+      "intro": "A minimal LangGraph chat agent with multi-turn conversation. lg-resp-chat uses the first-class langchain-azure-ai hosting integration; byo-resp-langgraph-chat hosts an equivalent graph with the generic BYO Responses server SDK.",
       "sampleIds": [
-        "lg-resp-chat"
+        "lg-resp-chat",
+        "byo-resp-langgraph-chat"
       ]
     },
     "lg-tools": {
@@ -502,9 +503,11 @@
       "id": "lg-tools-toolbox-result",
       "type": "result",
       "breadcrumb": "Toolbox",
-      "intro": "A LangGraph agent wired to a Foundry Toolbox exposing web_search + a GitHub Copilot MCP tool.",
+      "intro": "A LangGraph agent wired to a Foundry Toolbox. lg-resp-toolbox uses the first-class integration; the BYO-hosted variants add a graph over the generic server SDK, including one that accesses tools on behalf of the signed-in user.",
       "sampleIds": [
-        "lg-resp-toolbox"
+        "lg-resp-toolbox",
+        "byo-resp-langgraph-toolbox",
+        "byo-resp-langgraph-toolbox-user-identity"
       ]
     },
     "lg-tools-mcp-result": {
@@ -556,9 +559,10 @@
       "id": "lg-inv-result",
       "type": "result",
       "breadcrumb": "Invocations",
-      "intro": "A minimal LangGraph agent over Invocations with session state backed by a checkpointer.",
+      "intro": "A LangGraph agent over Invocations with client-managed session state. lg-inv-chat uses the first-class integration with a checkpointer; byo-inv-langgraph-chat hosts an equivalent graph with the generic BYO Invocations server SDK.",
       "sampleIds": [
-        "lg-inv-chat"
+        "lg-inv-chat",
+        "byo-inv-langgraph-chat"
       ]
     },
     "lg-a2a-result": {
@@ -587,16 +591,6 @@
           "label": "Expose a custom API you define and control",
           "description": "Invocations protocol — arbitrary JSON in / SSE out; you define the schema and manage sessions yourself.",
           "next": "byo-inv-capability"
-        },
-        {
-          "label": "Add real-time voice via Azure Voice Live",
-          "description": "A managed real-time voice layer (speech-to-text + LLM + text-to-speech) on top of a standard or custom API.",
-          "next": "byo-voice"
-        },
-        {
-          "label": "Stream real-time audio over WebSocket / WebRTC",
-          "description": "You own the real-time audio transport — Pipecat, LiveKit, or raw Voice Live over a socket.",
-          "next": "byo-ws"
         }
       ]
     },
@@ -608,15 +602,15 @@
       "help": "Level 3 — pick the framework you already use, or the scenario nearest to yours.",
       "options": [
         {
-          "label": "The simplest hello-world",
-          "description": "Call a Foundry model and return the reply.",
+          "label": "Start native — just a model SDK, no framework",
+          "description": "Write plain code that calls a Foundry model directly through a model SDK — no agent framework required. The simplest possible starting point.",
           "next": "byo-resp-hello-result",
           "recommended": true
         },
         {
-          "label": "I have code in a specific framework",
-          "description": "LangGraph or the OpenAI Agents SDK.",
-          "next": "byo-resp-adapters"
+          "label": "Use the OpenAI Agents SDK",
+          "description": "Host an agent built with the OpenAI Agents SDK over Responses.",
+          "next": "byo-resp-openai-result"
         },
         {
           "label": "Connect to tools via a Foundry Toolbox",
@@ -654,38 +648,9 @@
       "id": "byo-resp-hello-result",
       "type": "result",
       "breadcrumb": "Hello world",
-      "intro": "The simplest possible BYO Responses agent.",
+      "intro": "The simplest possible BYO Responses agent — plain code that calls a Foundry model directly through a model SDK, with no agent framework.",
       "sampleIds": [
         "byo-resp-hello-world"
-      ]
-    },
-    "byo-resp-adapters": {
-      "id": "byo-resp-adapters",
-      "type": "question",
-      "breadcrumb": "Framework",
-      "title": "Which framework or SDK?",
-      "help": "Host your existing agent unchanged over Responses.",
-      "options": [
-        {
-          "label": "LangGraph",
-          "description": "LangGraph conversational agent with multi-turn history.",
-          "next": "byo-resp-langgraph-result",
-          "recommended": true
-        },
-        {
-          "label": "OpenAI Agents SDK",
-          "description": "An agent built with the OpenAI Agents SDK.",
-          "next": "byo-resp-openai-result"
-        }
-      ]
-    },
-    "byo-resp-langgraph-result": {
-      "id": "byo-resp-langgraph-result",
-      "type": "result",
-      "breadcrumb": "LangGraph",
-      "intro": "A LangGraph conversational agent hosted over the Responses protocol.",
-      "sampleIds": [
-        "byo-resp-langgraph-chat"
       ]
     },
     "byo-resp-openai-result": {
@@ -701,11 +666,9 @@
       "id": "byo-resp-tools-result",
       "type": "result",
       "breadcrumb": "Toolbox",
-      "intro": "Wire a BYO agent to a Foundry Toolbox. The plain toolbox sample is the baseline; the LangGraph variants add a graph, and the user-identity variant accesses tools on behalf of the signed-in user.",
+      "intro": "Wire a BYO agent to a Foundry Toolbox for external tools.",
       "sampleIds": [
-        "byo-resp-toolbox",
-        "byo-resp-langgraph-toolbox",
-        "byo-resp-langgraph-toolbox-user-identity"
+        "byo-resp-toolbox"
       ]
     },
     "byo-resp-notetaking-result": {
@@ -791,15 +754,15 @@
       "help": "Level 3 — arbitrary JSON in / SSE out; you own the payload and sessions.",
       "options": [
         {
-          "label": "The simplest hello-world",
-          "description": "JSON in, streaming SSE out.",
+          "label": "Start native — just a model SDK, no framework",
+          "description": "Write plain code that calls a Foundry model directly through a model SDK — no agent framework required. JSON in, streaming SSE out.",
           "next": "byo-inv-hello-result",
           "recommended": true
         },
         {
-          "label": "I have code in a framework (LangGraph, Claude Agent SDK)",
-          "description": "Host an existing framework agent over Invocations.",
-          "next": "byo-inv-adapters"
+          "label": "Use the Claude Agent SDK",
+          "description": "Host an agent built with the Claude Agent SDK over Invocations.",
+          "next": "byo-inv-claude-result"
         },
         {
           "label": "Connect to tools via a Foundry Toolbox",
@@ -842,38 +805,9 @@
       "id": "byo-inv-hello-result",
       "type": "result",
       "breadcrumb": "Hello world",
-      "intro": "The simplest BYO Invocations agent — arbitrary JSON in, streaming SSE out.",
+      "intro": "The simplest BYO Invocations agent — plain code that calls a Foundry model directly through a model SDK (no framework); arbitrary JSON in, streaming SSE out.",
       "sampleIds": [
         "byo-inv-hello-world"
-      ]
-    },
-    "byo-inv-adapters": {
-      "id": "byo-inv-adapters",
-      "type": "question",
-      "breadcrumb": "Framework",
-      "title": "Which framework or SDK?",
-      "help": "Host your existing framework agent over Invocations.",
-      "options": [
-        {
-          "label": "LangGraph",
-          "description": "LangGraph conversational agent with client-managed sessions.",
-          "next": "byo-inv-langgraph-result",
-          "recommended": true
-        },
-        {
-          "label": "Claude Agent SDK",
-          "description": "Claude Agent SDK with streaming, in Foundry mode.",
-          "next": "byo-inv-claude-result"
-        }
-      ]
-    },
-    "byo-inv-langgraph-result": {
-      "id": "byo-inv-langgraph-result",
-      "type": "result",
-      "breadcrumb": "LangGraph",
-      "intro": "A LangGraph conversational agent over Invocations with client-managed sessions.",
-      "sampleIds": [
-        "byo-inv-langgraph-chat"
       ]
     },
     "byo-inv-claude-result": {
@@ -946,166 +880,6 @@
       "intro": "A no-LLM agent that probes DNS/TCP/TLS/HTTP and reports what the runtime can reach.",
       "sampleIds": [
         "byo-inv-diagnostic"
-      ]
-    },
-    "byo-voice": {
-      "id": "byo-voice",
-      "type": "question",
-      "breadcrumb": "Voice Live",
-      "title": "Which Voice Live pattern fits?",
-      "help": "Azure Voice Live adds real-time voice to a Responses or Invocations agent.",
-      "options": [
-        {
-          "label": "Minimal hello-world (Invocations)",
-          "description": "The smallest Voice Live-compatible Invocations agent.",
-          "next": "byo-vl-hello-result",
-          "recommended": true
-        },
-        {
-          "label": "A task-oriented voice agent (hotel booking)",
-          "description": "A booking assistant driven by voice (Invocations).",
-          "next": "byo-vl-hotel-result"
-        },
-        {
-          "label": "Foreground + background agents (Responses)",
-          "description": "Parallel foreground and background agents.",
-          "next": "byo-vl-fgbg-result"
-        },
-        {
-          "label": "LangGraph with handoff (Responses)",
-          "description": "A LangGraph Responses agent with handoff, Voice Live-ready.",
-          "next": "byo-vl-handoff-result"
-        },
-        {
-          "label": "Just the client to talk to a deployed agent",
-          "description": "The shared voicelive_client.py (a client, not an agent).",
-          "next": "byo-vl-client-result"
-        }
-      ]
-    },
-    "byo-vl-hello-result": {
-      "id": "byo-vl-hello-result",
-      "type": "result",
-      "breadcrumb": "Hello world",
-      "intro": "A minimal Invocations agent compatible with Azure Voice Live.",
-      "sampleIds": [
-        "byo-vl-hello-world"
-      ]
-    },
-    "byo-vl-hotel-result": {
-      "id": "byo-vl-hotel-result",
-      "type": "result",
-      "breadcrumb": "Hotel booking",
-      "intro": "A hotel-booking Invocations agent driven by real-time voice.",
-      "sampleIds": [
-        "byo-vl-hotel-booking"
-      ]
-    },
-    "byo-vl-fgbg-result": {
-      "id": "byo-vl-fgbg-result",
-      "type": "result",
-      "breadcrumb": "Foreground + background",
-      "intro": "A Responses Voice Live agent with parallel foreground and background agents.",
-      "sampleIds": [
-        "byo-vl-foreground-background"
-      ]
-    },
-    "byo-vl-handoff-result": {
-      "id": "byo-vl-handoff-result",
-      "type": "result",
-      "breadcrumb": "LangGraph handoff",
-      "intro": "A LangGraph Responses agent with handoff, made Voice Live-compatible.",
-      "sampleIds": [
-        "byo-vl-handoff-langgraph"
-      ]
-    },
-    "byo-vl-client-result": {
-      "id": "byo-vl-client-result",
-      "type": "result",
-      "breadcrumb": "Voice client",
-      "intro": "The shared Voice Live client for talking to a deployed Responses agent.",
-      "sampleIds": [
-        "byo-vl-client"
-      ]
-    },
-    "byo-ws": {
-      "id": "byo-ws",
-      "type": "question",
-      "breadcrumb": "Real-time audio",
-      "title": "Which real-time audio stack?",
-      "help": "The invocations_ws protocol: you own the WebSocket/WebRTC audio transport.",
-      "options": [
-        {
-          "label": "Minimal Voice Live over WebSocket",
-          "description": "~250-line agent bridging a browser socket to a Voice Live session.",
-          "next": "byo-ws-hello-result",
-          "recommended": true
-        },
-        {
-          "label": "Pipecat over WebSocket (audio on the socket)",
-          "description": "Pipecat pipeline with PCM audio framed over the WebSocket.",
-          "next": "byo-ws-pipecat-ws-result"
-        },
-        {
-          "label": "Pipecat with WebRTC media",
-          "description": "Signaling on the socket; media over a WebRTC peer connection.",
-          "next": "byo-ws-pipecat-webrtc-result"
-        },
-        {
-          "label": "LiveKit",
-          "description": "LiveKit Agents framework; socket returns room credentials.",
-          "next": "byo-ws-livekit-result"
-        },
-        {
-          "label": "Duplex foreground + background",
-          "description": "A low-latency router plus autonomous background workers.",
-          "next": "byo-ws-duplex-result"
-        }
-      ]
-    },
-    "byo-ws-hello-result": {
-      "id": "byo-ws-hello-result",
-      "type": "result",
-      "breadcrumb": "Hello world",
-      "intro": "The smallest invocations_ws agent, bridging each socket to a Voice Live session.",
-      "sampleIds": [
-        "byo-ws-hello-world"
-      ]
-    },
-    "byo-ws-pipecat-ws-result": {
-      "id": "byo-ws-pipecat-ws-result",
-      "type": "result",
-      "breadcrumb": "Pipecat WS",
-      "intro": "A pipecat voice agent with PCM audio over the WebSocket.",
-      "sampleIds": [
-        "byo-ws-pipecat-ws"
-      ]
-    },
-    "byo-ws-pipecat-webrtc-result": {
-      "id": "byo-ws-pipecat-webrtc-result",
-      "type": "result",
-      "breadcrumb": "Pipecat WebRTC",
-      "intro": "The same pipecat bot with signaling on the socket and media over WebRTC.",
-      "sampleIds": [
-        "byo-ws-pipecat-webrtc"
-      ]
-    },
-    "byo-ws-livekit-result": {
-      "id": "byo-ws-livekit-result",
-      "type": "result",
-      "breadcrumb": "LiveKit",
-      "intro": "A LiveKit voice agent; media flows browser ↔ LiveKit ↔ agent.",
-      "sampleIds": [
-        "byo-ws-livekit"
-      ]
-    },
-    "byo-ws-duplex-result": {
-      "id": "byo-ws-duplex-result",
-      "type": "result",
-      "breadcrumb": "Duplex live",
-      "intro": "A Voice Live agent with a foreground router plus autonomous background workers.",
-      "sampleIds": [
-        "byo-ws-duplex-live"
       ]
     }
   }
