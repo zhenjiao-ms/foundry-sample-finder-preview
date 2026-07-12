@@ -93,7 +93,6 @@ main.wrap { padding-top: 26px; padding-bottom: 40px; min-height: 50vh; }
   margin-bottom: 18px;
 }
 .guide-intro { margin: 0; color: var(--text-muted); font-size: 14px; max-width: 62ch; }
-.guide-controls { display: flex; gap: 8px; }
 
 /* Root question header */
 .tree-question-head { margin-bottom: 14px; }

@@ -205,20 +205,6 @@ function renderTree() {
   host.appendChild(renderOptions(root, 0, "root"));
 }
 
-function allKeys() {
-  const keys = new Set();
-  const walk = (node, pathKey) => {
-    if (!node || node.type !== "question") return;
-    node.options.forEach((opt, i) => {
-      const k = `${pathKey}>${i}`;
-      keys.add(k);
-      walk(state.tree.nodes[opt.next], k);
-    });
-  };
-  walk(state.tree.nodes[state.tree.meta.rootId], "root");
-  return keys;
-}
-
 /* ---------- browse ---------- */
 const browseState = { q: "", framework: "", protocol: "", category: "", level: "" };
 
@@ -318,14 +304,6 @@ async function main() {
   populateFilters();
   wireBrowse();
   wireTabs();
-  document.getElementById("btnExpandAll").addEventListener("click", () => {
-    state.open = allKeys();
-    renderTree();
-  });
-  document.getElementById("btnCollapseAll").addEventListener("click", () => {
-    state.open.clear();
-    renderTree();
-  });
   renderTree();
   setView("guide");
 }
