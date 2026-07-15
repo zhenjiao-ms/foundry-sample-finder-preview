@@ -234,10 +234,19 @@ function familyCard(family) {
   ]);
 }
 
+function familyCoverage(family) {
+  const vs = familyVariants(family);
+  return { variants: vs.length, frameworks: new Set(vs.map((v) => v.sample.sdk)).size };
+}
+
 function blockPanel(node) {
   const panel = el("div", { class: "block-panel" });
   if (node.description) panel.appendChild(el("p", { class: "block-longdesc", text: node.description }));
-  const fams = node.families || [];
+  const fams = (node.families || []).slice().sort((a, b) => {
+    const ca = familyCoverage(a);
+    const cb = familyCoverage(b);
+    return cb.variants - ca.variants || cb.frameworks - ca.frameworks;
+  });
   if (!fams.length) {
     panel.appendChild(el("div", { class: "empty", text: "No samples mapped to this block." }));
     return panel;
