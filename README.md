@@ -1,5 +1,7 @@
 # Foundry Hosted-Agent Sample Finder
 
+> **▶️ Try it live:** Want to try out the Hosted-Agent Sample Finder? Open it here — **https://kimizhu.github.io/foundry-sample-finder**
+
 An interactive **decision tree** that turns the flat list of ~60 hosted-agent samples in [`microsoft-foundry/foundry-samples` → `samples/python/hosted-agents`](https://github.com/microsoft-foundry/foundry-samples/tree/main/samples/python/hosted-agents) into a few answerable questions, so users can find the right starting sample instead of scrolling a long list.
 
 Built as **plain static HTML/CSS/JS — no build step**. Double-click `index.html` to run it, or serve the folder (see below).
