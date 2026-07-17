@@ -63,7 +63,8 @@ window.HA_SAMPLES = {
         "quickstart"
       ],
       "path": "agent-framework/responses/01-basic",
-      "description": "A minimal agent demonstrating request/response interaction and multi-turn conversations using previous_response_id. The recommended first agent."
+      "description": "A minimal agent demonstrating request/response interaction and multi-turn conversations using previous_response_id. The recommended first agent.",
+      "runFile": "./src/agent-framework-agent-basic-responses/main.py"
     },
     {
       "id": "af-resp-tools",
@@ -79,7 +80,8 @@ window.HA_SAMPLES = {
         "function-calling"
       ],
       "path": "agent-framework/responses/02-tools",
-      "description": "Register and invoke custom local tool functions (e.g. a weather lookup) alongside the LLM."
+      "description": "Register and invoke custom local tool functions (e.g. a weather lookup) alongside the LLM.",
+      "runFile": "./src/agent-framework-agent-with-local-tools-responses/main.py"
     },
     {
       "id": "af-resp-mcp",
@@ -96,7 +98,8 @@ window.HA_SAMPLES = {
         "github"
       ],
       "path": "agent-framework/responses/03-mcp",
-      "description": "Connect to a remote MCP server (e.g. GitHub) to consume external MCP tools, retrieval, and more."
+      "description": "Connect to a remote MCP server (e.g. GitHub) to consume external MCP tools, retrieval, and more.",
+      "runFile": "./src/agent-framework-agent-with-remote-mcp-tools-responses/main.py"
     },
     {
       "id": "af-resp-foundry-toolbox",
@@ -112,7 +115,8 @@ window.HA_SAMPLES = {
         "managed-tools"
       ],
       "path": "agent-framework/responses/04-foundry-toolbox",
-      "description": "Use an Azure Foundry Toolbox for managed tool access; provision the toolbox and query available tools at runtime."
+      "description": "Use an Azure Foundry Toolbox for managed tool access; provision the toolbox and query available tools at runtime.",
+      "runFile": "./src/agent-framework-agent-with-foundry-toolbox-responses/main.py"
     },
     {
       "id": "af-resp-workflows",
@@ -129,7 +133,8 @@ window.HA_SAMPLES = {
         "multi-step"
       ],
       "path": "agent-framework/responses/05-workflows",
-      "description": "Compose a multi-step orchestrated workflow, chaining prompts/agents into a sequential pipeline."
+      "description": "Compose a multi-step orchestrated workflow, chaining prompts/agents into a sequential pipeline.",
+      "runFile": "./src/agent-framework-workflows-responses/main.py"
     },
     {
       "id": "af-resp-files",
@@ -145,7 +150,8 @@ window.HA_SAMPLES = {
         "uploads"
       ],
       "path": "agent-framework/responses/06-files",
-      "description": "Handle files uploaded to the session and reason over their contents."
+      "description": "Handle files uploaded to the session and reason over their contents.",
+      "runFile": "./src/agent-framework-agent-files-responses/main.py"
     },
     {
       "id": "af-resp-skills",
@@ -162,7 +168,8 @@ window.HA_SAMPLES = {
         "file-based"
       ],
       "path": "agent-framework/responses/07-skills",
-      "description": "Native file-based Agent Framework skills: skill discovery plus a script-backed PDF travel-guide skill."
+      "description": "Native file-based Agent Framework skills: skill discovery plus a script-backed PDF travel-guide skill.",
+      "runFile": "./src/agent-framework-agent-with-skills-responses/main.py"
     },
     {
       "id": "af-resp-teams-activity",
@@ -181,7 +188,8 @@ window.HA_SAMPLES = {
         "attachments"
       ],
       "path": "agent-framework/responses/07-teams-activity",
-      "description": "Publish the agent to Microsoft Teams / M365. Answers Teams & calendar questions via Work IQ tools and accepts message file attachments."
+      "description": "Publish the agent to Microsoft Teams / M365. Answers Teams & calendar questions via Work IQ tools and accepts message file attachments.",
+      "runFile": "./src/agent-framework-agent-teams-activity/main.py"
     },
     {
       "id": "af-resp-observability",
@@ -199,7 +207,8 @@ window.HA_SAMPLES = {
         "app-insights"
       ],
       "path": "agent-framework/responses/08-observability",
-      "description": "Add logging, metrics, and distributed tracing that flow to Application Insights."
+      "description": "Add logging, metrics, and distributed tracing that flow to Application Insights.",
+      "runFile": "./src/agent-framework-agent-observability-responses/main.py"
     },
     {
       "id": "af-resp-declarative",
@@ -217,7 +226,8 @@ window.HA_SAMPLES = {
         "routing"
       ],
       "path": "agent-framework/responses/09-declarative-customer-support",
-      "description": "A multi-turn customer-support triage workflow authored entirely in YAML, invoking specialist Foundry agents via InvokeAzureAgent with conversation-aware routing."
+      "description": "A multi-turn customer-support triage workflow authored entirely in YAML, invoking specialist Foundry agents via InvokeAzureAgent with conversation-aware routing.",
+      "runFile": "./src/agent-framework-declarative-customer-support-responses/main.py"
     },
     {
       "id": "af-resp-downstream-azure",
@@ -236,7 +246,8 @@ window.HA_SAMPLES = {
         "keyless"
       ],
       "path": "agent-framework/responses/10-downstream-azure",
-      "description": "Call Azure Blob Storage and Service Bus using the agent's per-agent Microsoft Entra identity and Azure RBAC — no connection strings or shared keys."
+      "description": "Call Azure Blob Storage and Service Bus using the agent's per-agent Microsoft Entra identity and Azure RBAC — no connection strings or shared keys.",
+      "runFile": "./src/agent-framework-agent-downstream-azure-responses/main.py"
     },
     {
       "id": "af-resp-azure-search-rag",
@@ -253,7 +264,8 @@ window.HA_SAMPLES = {
         "grounding"
       ],
       "path": "agent-framework/responses/11-azure-search-rag",
-      "description": "Retrieval-Augmented Generation grounded in documents indexed in an Azure AI Search index."
+      "description": "Retrieval-Augmented Generation grounded in documents indexed in an Azure AI Search index.",
+      "runFile": "./src/agent-framework-agent-azure-search-rag-responses/main.py"
     },
     {
       "id": "af-resp-foundry-skills",
@@ -270,7 +282,8 @@ window.HA_SAMPLES = {
         "rest-api"
       ],
       "path": "agent-framework/responses/12-foundry-skills",
-      "description": "Upload SKILL.md files to the Foundry Skills REST API and download them at startup, decoupling tone/policy guidelines from agent code."
+      "description": "Upload SKILL.md files to the Foundry Skills REST API and download them at startup, decoupling tone/policy guidelines from agent code.",
+      "runFile": "./src/agent-framework-agent-foundry-skills-responses/main.py"
     },
     {
       "id": "af-resp-foundry-memory",
@@ -287,7 +300,8 @@ window.HA_SAMPLES = {
         "persistence"
       ],
       "path": "agent-framework/responses/13-foundry-memory",
-      "description": "Persistent semantic memory backed by an Azure AI Foundry Memory Store (FoundryMemoryProvider) to remember user facts across sessions."
+      "description": "Persistent semantic memory backed by an Azure AI Foundry Memory Store (FoundryMemoryProvider) to remember user facts across sessions.",
+      "runFile": "./src/agent-framework-agent-foundry-memory-responses/main.py"
     },
     {
       "id": "af-resp-browser-automation",
@@ -305,7 +319,8 @@ window.HA_SAMPLES = {
         "toolbox"
       ],
       "path": "agent-framework/responses/14-browser-automation-agent",
-      "description": "Browser automation via Foundry Toolbox and the Browser Automation tool (Azure Playwright Service): general browsing, web scraping, and form filling."
+      "description": "Browser automation via Foundry Toolbox and the Browser Automation tool (Azure Playwright Service): general browsing, web scraping, and form filling.",
+      "runFile": "./src/bat-python-maf/main.py"
     },
     {
       "id": "af-resp-optimization-travel",
@@ -323,7 +338,8 @@ window.HA_SAMPLES = {
         "preview"
       ],
       "path": "agent-framework/responses/15-optimization-travel-approver",
-      "description": "A travel-request approval agent wired for the Foundry Agent Optimizer; optimizes instructions, skills, and tool descriptions against an evaluation dataset."
+      "description": "A travel-request approval agent wired for the Foundry Agent Optimizer; optimizes instructions, skills, and tool descriptions against an evaluation dataset.",
+      "runFile": "./src/optimization-travel-approver-python-responses/main.py"
     },
     {
       "id": "af-resp-content-safety",
@@ -340,7 +356,8 @@ window.HA_SAMPLES = {
         "guardrail"
       ],
       "path": "agent-framework/responses/16-content-safety-guardrail",
-      "description": "Attach a Responsible AI content-safety guardrail so the platform screens prompts and responses against your safety policy."
+      "description": "Attach a Responsible AI content-safety guardrail so the platform screens prompts and responses against your safety policy.",
+      "runFile": "./src/agent-framework-content-safety-guardrail/main.py"
     },
     {
       "id": "af-resp-foundry-iq-toolbox",
@@ -360,7 +377,8 @@ window.HA_SAMPLES = {
         "keyless"
       ],
       "path": "agent-framework/responses/17-foundry-iq-toolbox",
-      "description": "Answer questions from a Foundry IQ knowledge base (Azure AI Search agentic retrieval) reached through a Foundry Toolbox MCP endpoint using keyless agent identity."
+      "description": "Answer questions from a Foundry IQ knowledge base (Azure AI Search agentic retrieval) reached through a Foundry Toolbox MCP endpoint using keyless agent identity.",
+      "runFile": "./src/agent-framework-foundry-iq-knowledge-base-responses/main.py"
     },
     {
       "id": "af-inv-basic",
@@ -377,7 +395,8 @@ window.HA_SAMPLES = {
         "custom-http"
       ],
       "path": "agent-framework/invocations/01-basic",
-      "description": "Minimal Invocations-protocol agent showing the invocations handler pattern with session state via agent_session_id in URL params / response headers."
+      "description": "Minimal Invocations-protocol agent showing the invocations handler pattern with session state via agent_session_id in URL params / response headers.",
+      "runFile": "./src/agent-framework-agent-basic-invocations/main.py"
     },
     {
       "id": "af-a2a-delegation",
@@ -395,7 +414,8 @@ window.HA_SAMPLES = {
         "toolbox"
       ],
       "path": "agent-framework/a2a/01-delegation",
-      "description": "A Responses caller delegates over A2A to a Responses executor exposed as an A2A endpoint (Foundry incoming A2A) via a Foundry Toolbox a2a_preview tool over a RemoteA2A connection."
+      "description": "A Responses caller delegates over A2A to a Responses executor exposed as an A2A endpoint (Foundry incoming A2A) via a Foundry Toolbox a2a_preview tool over a RemoteA2A connection.",
+      "runFile": "./caller/src/agent-framework-a2a-caller-responses/main.py"
     },
     {
       "id": "lg-resp-chat",
@@ -413,7 +433,8 @@ window.HA_SAMPLES = {
         "quickstart"
       ],
       "path": "langgraph/responses/01-langgraph-chat",
-      "description": "Minimal LangGraph agent with two local tools (get_current_time, calculator); multi-turn conversation via previous_response_id. The recommended first LangGraph agent."
+      "description": "Minimal LangGraph agent with two local tools (get_current_time, calculator); multi-turn conversation via previous_response_id. The recommended first LangGraph agent.",
+      "runFile": "./src/langgraph-chat-responses/main.py"
     },
     {
       "id": "lg-resp-toolbox",
@@ -432,7 +453,8 @@ window.HA_SAMPLES = {
         "oauth"
       ],
       "path": "langgraph/responses/02-langgraph-toolbox",
-      "description": "A LangGraph agent wired to a Foundry Toolbox exposing web_search plus a connection-backed GitHub Copilot MCP tool, with OAuth consent surfacing."
+      "description": "A LangGraph agent wired to a Foundry Toolbox exposing web_search plus a connection-backed GitHub Copilot MCP tool, with OAuth consent surfacing.",
+      "runFile": "./src/toolbox-langgraph/main.py"
     },
     {
       "id": "lg-resp-mcp",
@@ -449,7 +471,8 @@ window.HA_SAMPLES = {
         "github-copilot"
       ],
       "path": "langgraph/responses/04-mcp",
-      "description": "A LangGraph agent that loads tools from a remote MCP server (default: GitHub Copilot MCP) via langchain_mcp_adapters MultiServerMCPClient."
+      "description": "A LangGraph agent that loads tools from a remote MCP server (default: GitHub Copilot MCP) via langchain_mcp_adapters MultiServerMCPClient.",
+      "runFile": "./src/langgraph-mcp-responses/main.py"
     },
     {
       "id": "lg-resp-workflows",
@@ -466,7 +489,8 @@ window.HA_SAMPLES = {
         "multi-node"
       ],
       "path": "langgraph/responses/05-workflows",
-      "description": "A custom StateGraph chaining three specialized LLM nodes — slogan writer, legal reviewer, formatter — each seeing only the previous agent's output."
+      "description": "A custom StateGraph chaining three specialized LLM nodes — slogan writer, legal reviewer, formatter — each seeing only the previous agent's output.",
+      "runFile": "./src/langgraph-workflows-responses/main.py"
     },
     {
       "id": "lg-resp-files",
@@ -483,7 +507,8 @@ window.HA_SAMPLES = {
         "toolbox"
       ],
       "path": "langgraph/responses/06-files",
-      "description": "A LangGraph agent with local filesystem tools and a Foundry-Toolbox code_interpreter for session-uploaded files."
+      "description": "A LangGraph agent with local filesystem tools and a Foundry-Toolbox code_interpreter for session-uploaded files.",
+      "runFile": "./src/langgraph-files-responses/main.py"
     },
     {
       "id": "lg-resp-hitl",
@@ -500,7 +525,8 @@ window.HA_SAMPLES = {
         "approval"
       ],
       "path": "langgraph/responses/07-human-in-the-loop",
-      "description": "A StateGraph that drafts a proposal and pauses for human approval via langgraph.types.interrupt, serialized as mcp_approval_request + function_call output items."
+      "description": "A StateGraph that drafts a proposal and pauses for human approval via langgraph.types.interrupt, serialized as mcp_approval_request + function_call output items.",
+      "runFile": "./src/langgraph-human-in-the-loop-responses/main.py"
     },
     {
       "id": "lg-resp-observability",
@@ -518,7 +544,8 @@ window.HA_SAMPLES = {
         "app-insights"
       ],
       "path": "langgraph/responses/08-observability",
-      "description": "A LangGraph agent with GenAI OpenTelemetry tracing via enable_auto_tracing(), emitting spans, metrics, and logs to Application Insights."
+      "description": "A LangGraph agent with GenAI OpenTelemetry tracing via enable_auto_tracing(), emitting spans, metrics, and logs to Application Insights.",
+      "runFile": "./src/langgraph-observability-responses/main.py"
     },
     {
       "id": "lg-inv-chat",
@@ -535,7 +562,8 @@ window.HA_SAMPLES = {
         "checkpointer"
       ],
       "path": "langgraph/invocations/01-langgraph-chat",
-      "description": "Minimal LangGraph agent with local tools; session state via agent_session_id (URL param / x-agent-session-id header) backed by a LangGraph checkpointer."
+      "description": "Minimal LangGraph agent with local tools; session state via agent_session_id (URL param / x-agent-session-id header) backed by a LangGraph checkpointer.",
+      "runFile": "./src/langgraph-chat-invocations/main.py"
     },
     {
       "id": "lg-a2a-delegation",
@@ -553,7 +581,8 @@ window.HA_SAMPLES = {
         "toolbox"
       ],
       "path": "langgraph/a2a",
-      "description": "A concierge LangGraph agent delegates math questions over A2A to a math-expert that publishes an incoming A2A endpoint + agent card, wired via a RemoteA2A connection and an a2a_preview Toolbox loaded over MCP."
+      "description": "A concierge LangGraph agent delegates math questions over A2A to a math-expert that publishes an incoming A2A endpoint + agent card, wired via a RemoteA2A connection and an a2a_preview Toolbox loaded over MCP.",
+      "runFile": "./a2a-caller/src/concierge/main.py"
     },
     {
       "id": "byo-resp-hello-world",
@@ -569,7 +598,8 @@ window.HA_SAMPLES = {
         "quickstart"
       ],
       "path": "bring-your-own/responses/hello-world",
-      "description": "Minimal BYO agent — calls a Foundry model via the Responses API and returns the reply. The simplest possible BYO starting point."
+      "description": "Minimal BYO agent — calls a Foundry model via the Responses API and returns the reply. The simplest possible BYO starting point.",
+      "runFile": "./src/hello-world-python-responses/main.py"
     },
     {
       "id": "byo-resp-langgraph-chat",
@@ -586,7 +616,8 @@ window.HA_SAMPLES = {
         "multi-turn"
       ],
       "path": "bring-your-own/responses/langgraph-chat",
-      "description": "A LangGraph conversational agent hosted on Foundry with multi-turn history over the Responses protocol."
+      "description": "A LangGraph conversational agent hosted on Foundry with multi-turn history over the Responses protocol.",
+      "runFile": "./src/langgraph-chat-responses/main.py"
     },
     {
       "id": "byo-resp-notetaking",
@@ -603,7 +634,8 @@ window.HA_SAMPLES = {
         "state"
       ],
       "path": "bring-your-own/responses/notetaking-agent",
-      "description": "An agent that takes and retrieves notes using a custom tool."
+      "description": "An agent that takes and retrieves notes using a custom tool.",
+      "runFile": "./src/notetaking-agent-responses-python/main.py"
     },
     {
       "id": "byo-resp-session-multiplexing",
@@ -620,7 +652,8 @@ window.HA_SAMPLES = {
         "user-scoping"
       ],
       "path": "bring-your-own/responses/session-multiplexing",
-      "description": "Multiple callers share one agent_session_id while previous_response_id history stays scoped by platform user context."
+      "description": "Multiple callers share one agent_session_id while previous_response_id history stays scoped by platform user context.",
+      "runFile": "./src/hello-world-session-multiplexing-python-responses/main.py"
     },
     {
       "id": "byo-resp-toolbox",
@@ -636,7 +669,8 @@ window.HA_SAMPLES = {
         "mcp"
       ],
       "path": "bring-your-own/responses/bring-your-own-toolbox",
-      "description": "A BYO agent wired to a Foundry Toolbox MCP endpoint for tool access."
+      "description": "A BYO agent wired to a Foundry Toolbox MCP endpoint for tool access.",
+      "runFile": "./src/toolbox-python-responses/main.py"
     },
     {
       "id": "byo-resp-background",
@@ -653,7 +687,8 @@ window.HA_SAMPLES = {
         "long-running"
       ],
       "path": "bring-your-own/responses/background-agent",
-      "description": "Long-running background processing with async execution."
+      "description": "Long-running background processing with async execution.",
+      "runFile": "./src/background-agent-responses/main.py"
     },
     {
       "id": "byo-resp-env-vars",
@@ -670,7 +705,8 @@ window.HA_SAMPLES = {
         "env-vars"
       ],
       "path": "bring-your-own/responses/env-vars-agent",
-      "description": "Reads env vars injected by Foundry's connection-templated secret resolver (ApiKey + CustomKeys connections) with a kind-aware secret-safety policy."
+      "description": "Reads env vars injected by Foundry's connection-templated secret resolver (ApiKey + CustomKeys connections) with a kind-aware secret-safety policy.",
+      "runFile": "./src/env-vars-agent-responses-python/main.py"
     },
     {
       "id": "byo-resp-browser-automation",
@@ -688,7 +724,8 @@ window.HA_SAMPLES = {
         "toolbox"
       ],
       "path": "bring-your-own/responses/browser-automation",
-      "description": "Browser automation using Toolbox MCP for session lifecycle and playwright-cli for browser commands; supports multi-session, form filling, and web scraping."
+      "description": "Browser automation using Toolbox MCP for session lifecycle and playwright-cli for browser commands; supports multi-session, form filling, and web scraping.",
+      "runFile": "./src/bat-python-byo/main.py"
     },
     {
       "id": "byo-resp-openai-agents-sdk",
@@ -703,7 +740,8 @@ window.HA_SAMPLES = {
         "openai-agents-sdk"
       ],
       "path": "bring-your-own/responses/openai-agents-sdk",
-      "description": "Host an agent built with the OpenAI Agents SDK on Foundry over the Responses protocol."
+      "description": "Host an agent built with the OpenAI Agents SDK on Foundry over the Responses protocol.",
+      "runFile": "./src/openai-agents-sdk-invocations/main.py"
     },
     {
       "id": "byo-resp-langgraph-toolbox",
@@ -720,7 +758,8 @@ window.HA_SAMPLES = {
         "mcp"
       ],
       "path": "bring-your-own/responses/langgraph-toolbox",
-      "description": "A LangGraph agent wired to a Foundry Toolbox over the Responses protocol."
+      "description": "A LangGraph agent wired to a Foundry Toolbox over the Responses protocol.",
+      "runFile": "./src/toolbox-langgraph/main.py"
     },
     {
       "id": "byo-resp-langgraph-toolbox-user-identity",
@@ -738,7 +777,8 @@ window.HA_SAMPLES = {
         "user-identity"
       ],
       "path": "bring-your-own/responses/langgraph-toolbox-user-identity",
-      "description": "A LangGraph + Foundry Toolbox agent that accesses tools using on-behalf-of user identity."
+      "description": "A LangGraph + Foundry Toolbox agent that accesses tools using on-behalf-of user identity.",
+      "runFile": "./src/toolbox-langgraph-user-identity/main.py"
     },
     {
       "id": "byo-resp-optimization-hello-world",
@@ -755,7 +795,8 @@ window.HA_SAMPLES = {
         "preview"
       ],
       "path": "bring-your-own/responses/optimization-hello-world",
-      "description": "A minimal BYO agent wired for the Foundry Agent Optimizer."
+      "description": "A minimal BYO agent wired for the Foundry Agent Optimizer.",
+      "runFile": "./src/optimization-hello-world-python-responses/main.py"
     },
     {
       "id": "byo-resp-optimization-customer-support",
@@ -773,7 +814,8 @@ window.HA_SAMPLES = {
         "preview"
       ],
       "path": "bring-your-own/responses/optimization-customer-support",
-      "description": "A customer-support agent configured for the Foundry Agent Optimizer."
+      "description": "A customer-support agent configured for the Foundry Agent Optimizer.",
+      "runFile": "./src/optimization-customer-support-python-responses/main.py"
     },
     {
       "id": "byo-inv-hello-world",
@@ -791,7 +833,8 @@ window.HA_SAMPLES = {
         "quickstart"
       ],
       "path": "bring-your-own/invocations/hello-world",
-      "description": "Minimal invocations agent — arbitrary JSON in, streaming SSE out. The simplest possible BYO invocations starting point."
+      "description": "Minimal invocations agent — arbitrary JSON in, streaming SSE out. The simplest possible BYO invocations starting point.",
+      "runFile": "./src/hello-world-python-invocations/main.py"
     },
     {
       "id": "byo-inv-langgraph-chat",
@@ -807,7 +850,8 @@ window.HA_SAMPLES = {
         "sessions"
       ],
       "path": "bring-your-own/invocations/langgraph-chat",
-      "description": "A LangGraph conversational agent over the Invocations protocol with client-managed sessions."
+      "description": "A LangGraph conversational agent over the Invocations protocol with client-managed sessions.",
+      "runFile": "./src/langgraph-chat-invocations/main.py"
     },
     {
       "id": "byo-inv-notetaking",
@@ -823,7 +867,8 @@ window.HA_SAMPLES = {
         "custom-tool"
       ],
       "path": "bring-your-own/invocations/notetaking-agent",
-      "description": "A note-taking agent using the Invocations protocol."
+      "description": "A note-taking agent using the Invocations protocol.",
+      "runFile": "./src/notetaking-agent-invocations-python/main.py"
     },
     {
       "id": "byo-inv-toolbox",
@@ -839,7 +884,8 @@ window.HA_SAMPLES = {
         "mcp"
       ],
       "path": "bring-your-own/invocations/toolbox",
-      "description": "A BYO invocations agent wired to a Foundry Toolbox MCP endpoint."
+      "description": "A BYO invocations agent wired to a Foundry Toolbox MCP endpoint.",
+      "runFile": "./src/toolbox-python-invocations/main.py"
     },
     {
       "id": "byo-inv-ag-ui",
@@ -856,7 +902,8 @@ window.HA_SAMPLES = {
         "custom-protocol"
       ],
       "path": "bring-your-own/invocations/ag-ui",
-      "description": "A Pydantic AI agent exposed over the AG-UI streaming protocol via the Invocations endpoint."
+      "description": "A Pydantic AI agent exposed over the AG-UI streaming protocol via the Invocations endpoint.",
+      "runFile": "./src/ag-ui-invocations/main.py"
     },
     {
       "id": "byo-inv-github-copilot",
@@ -873,7 +920,8 @@ window.HA_SAMPLES = {
         "backbone"
       ],
       "path": "bring-your-own/invocations/github-copilot",
-      "description": "An agent built on the GitHub Copilot SDK, using GitHub Copilot as the AI backbone."
+      "description": "An agent built on the GitHub Copilot SDK, using GitHub Copilot as the AI backbone.",
+      "runFile": "./src/github-copilot-invocations/main.py"
     },
     {
       "id": "byo-inv-hitl",
@@ -890,7 +938,8 @@ window.HA_SAMPLES = {
         "long-running"
       ],
       "path": "bring-your-own/invocations/human-in-the-loop",
-      "description": "A long-running agent that pauses for human approval before continuing."
+      "description": "A long-running agent that pauses for human approval before continuing.",
+      "runFile": "./src/human-in-the-loop-invocations/main.py"
     },
     {
       "id": "byo-inv-event-grid",
@@ -908,7 +957,8 @@ window.HA_SAMPLES = {
         "managed-identity"
       ],
       "path": "bring-your-own/invocations/event-grid-trigger",
-      "description": "Event-driven agent: Azure Storage triggers Event Grid which delivers to the hosted agent (authenticated by the system topic's managed identity); it summarizes a new blob and writes the summary to a sibling Storage container."
+      "description": "Event-driven agent: Azure Storage triggers Event Grid which delivers to the hosted agent (authenticated by the system topic's managed identity); it summarizes a new blob and writes the summary to a sibling Storage container.",
+      "runFile": "./src/event-grid-trigger-python-invocations/main.py"
     },
     {
       "id": "byo-inv-claude-agent-sdk",
@@ -925,7 +975,8 @@ window.HA_SAMPLES = {
         "streaming"
       ],
       "path": "bring-your-own/invocations/claude-agent-sdk",
-      "description": "A getting-started agent using the Claude Agent SDK with streaming over the Invocations protocol, configured for Microsoft Foundry mode by default."
+      "description": "A getting-started agent using the Claude Agent SDK with streaming over the Invocations protocol, configured for Microsoft Foundry mode by default.",
+      "runFile": "./src/claude-agent-sdk-invocations/main.py"
     },
     {
       "id": "byo-inv-diagnostic",
@@ -943,7 +994,8 @@ window.HA_SAMPLES = {
         "byo-infra"
       ],
       "path": "bring-your-own/invocations/diagnostic-agent",
-      "description": "A no-LLM diagnostic agent that runs DNS/TCP/TLS/HTTP probes and returns a structured reachability report describing what the runtime sandbox can reach — ideal for debugging BYO networking."
+      "description": "A no-LLM diagnostic agent that runs DNS/TCP/TLS/HTTP probes and returns a structured reachability report describing what the runtime sandbox can reach — ideal for debugging BYO networking.",
+      "runFile": "./src/diagnostic-agent-python-invocations/main.py"
     },
     {
       "id": "byo-ws-hello-world",
@@ -960,7 +1012,8 @@ window.HA_SAMPLES = {
         "quickstart"
       ],
       "path": "bring-your-own/invocations_ws/hello-world",
-      "description": "The smallest invocations_ws agent (~250 lines): bridges each browser WebSocket to an Azure Voice Live session (STT + LLM + TTS). Recommended WebSocket starting point."
+      "description": "The smallest invocations_ws agent (~250 lines): bridges each browser WebSocket to an Azure Voice Live session (STT + LLM + TTS). Recommended WebSocket starting point.",
+      "runFile": "./src/hello-world/main.py"
     },
     {
       "id": "byo-ws-pipecat-ws",
@@ -977,7 +1030,8 @@ window.HA_SAMPLES = {
         "multi-agent"
       ],
       "path": "bring-your-own/invocations_ws/pipecat-ws-server",
-      "description": "Real-time voice agent on pipecat: Azure Fast Transcription then two Azure OpenAI sub-agents (greeter + check-order) then Azure TTS, streaming mic/bot PCM over the WebSocket."
+      "description": "Real-time voice agent on pipecat: Azure Fast Transcription then two Azure OpenAI sub-agents (greeter + check-order) then Azure TTS, streaming mic/bot PCM over the WebSocket.",
+      "runFile": "./src/pipecat-ws-server/server.py"
     },
     {
       "id": "byo-ws-pipecat-webrtc",
@@ -994,7 +1048,8 @@ window.HA_SAMPLES = {
         "turn"
       ],
       "path": "bring-your-own/invocations_ws/pipecat-webrtc",
-      "description": "The same multi-agent pipecat bot, but the WebSocket is signaling-only; audio flows over a negotiated WebRTC peer connection with TURN credentials."
+      "description": "The same multi-agent pipecat bot, but the WebSocket is signaling-only; audio flows over a negotiated WebRTC peer connection with TURN credentials.",
+      "runFile": "./src/pipecat-ws-webrtc/server.py"
     },
     {
       "id": "byo-ws-livekit",
@@ -1010,7 +1065,8 @@ window.HA_SAMPLES = {
         "webrtc"
       ],
       "path": "bring-your-own/invocations_ws/livekit-server",
-      "description": "A voice agent on the LiveKit Agents framework with Azure STT/LLM/TTS; the WebSocket returns LiveKit room credentials and media flows browser to LiveKit to agent."
+      "description": "A voice agent on the LiveKit Agents framework with Azure STT/LLM/TTS; the WebSocket returns LiveKit room credentials and media flows browser to LiveKit to agent.",
+      "runFile": "./src/livekit-server/agent.py"
     },
     {
       "id": "byo-ws-duplex-live",
@@ -1027,7 +1083,8 @@ window.HA_SAMPLES = {
         "background"
       ],
       "path": "bring-your-own/invocations_ws/duplex-live-agent",
-      "description": "A real-time Voice Live agent with two parallel tracks: a low-latency foreground router plus autonomous background workers for multi-step tasks."
+      "description": "A real-time Voice Live agent with two parallel tracks: a low-latency foreground router plus autonomous background workers for multi-step tasks.",
+      "runFile": "./src/duplex-live-agent/main.py"
     },
     {
       "id": "byo-vl-foreground-background",
@@ -1043,7 +1100,8 @@ window.HA_SAMPLES = {
         "background"
       ],
       "path": "bring-your-own/voicelive/foreground-background-agents-responses-voicelive",
-      "description": "A Responses-protocol Voice Live agent that runs parallel foreground and background agents."
+      "description": "A Responses-protocol Voice Live agent that runs parallel foreground and background agents.",
+      "runFile": "./src/foreground-background-agents-voicelive/main.py"
     },
     {
       "id": "byo-vl-handoff-langgraph",
@@ -1060,7 +1118,8 @@ window.HA_SAMPLES = {
         "handoff"
       ],
       "path": "bring-your-own/voicelive/handoff-langgraph-responses-voicelive",
-      "description": "A LangGraph Responses agent with agent handoff, made compatible with Azure Voice Live."
+      "description": "A LangGraph Responses agent with agent handoff, made compatible with Azure Voice Live.",
+      "runFile": "./src/handoff-langgraph-responses-voicelive/main.py"
     },
     {
       "id": "byo-vl-hello-world",
@@ -1076,7 +1135,8 @@ window.HA_SAMPLES = {
         "quickstart"
       ],
       "path": "bring-your-own/voicelive/hello-world-invocations-voicelive",
-      "description": "A minimal Invocations agent compatible with Azure Voice Live (input_audio.transcription in, output_audio_transcription SSE out)."
+      "description": "A minimal Invocations agent compatible with Azure Voice Live (input_audio.transcription in, output_audio_transcription SSE out).",
+      "runFile": "./src/hello-world-python-invocations-voicelive/main.py"
     },
     {
       "id": "byo-vl-hotel-booking",
@@ -1092,7 +1152,8 @@ window.HA_SAMPLES = {
         "booking"
       ],
       "path": "bring-your-own/voicelive/hotel-booking-invocations-voicelive",
-      "description": "A hotel-booking Invocations agent driven by real-time voice through Azure Voice Live."
+      "description": "A hotel-booking Invocations agent driven by real-time voice through Azure Voice Live.",
+      "runFile": "./src/hotel-booking-python-invocations-voicelive/main.py"
     },
     {
       "id": "byo-vl-client",
