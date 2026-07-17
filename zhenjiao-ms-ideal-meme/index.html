@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Foundry Hosted-Agent Sample Finder</title>
-  <link rel="stylesheet" href="styles.css?v=20260717c" />
+  <link rel="stylesheet" href="styles.css?v=20260717d" />
 </head>
 <body>
   <header class="app-header">
@@ -44,9 +44,15 @@
 
     <!-- Browse view -->
     <section id="view-browse" class="view" hidden aria-labelledby="tab-browse">
-      <div id="browseSmart" class="browse-smart"></div>
       <div class="filters">
-        <input type="search" id="search" class="search" placeholder="Search samples (title, description, tags)…" aria-label="Search samples" />
+        <div class="browse-search-row">
+          <input type="search" id="search" class="search" placeholder="Search samples (title, description, tags)…" aria-label="Search samples" />
+          <button id="btnAskAgent" class="btn btn-primary btn-sm" type="button" hidden>Ask agent</button>
+        </div>
+        <label class="smart-toggle">
+          <input type="checkbox" id="browseSmartToggle" />
+          <span class="smart-toggle-text">✨ <b>Smart search</b> — let a deployed Foundry agent pick the sample</span>
+        </label>
         <div class="filter-selects">
           <label>Framework <select id="f-framework"></select></label>
           <label>Protocol <select id="f-protocol"></select></label>
@@ -86,6 +92,6 @@
       }
     })();
   </script>
-  <script src="app.js?v=20260717c"></script>
+  <script src="app.js?v=20260717d"></script>
 </body>
 </html>
