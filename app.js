@@ -840,7 +840,16 @@ function renderGuided(opts = {}) {
     }
     body.appendChild(el("p", { class: "guided-alts-label", text: `${results.length} ${results.length === 1 ? "match" : "matches"}${guidedState.framework ? " in " + sdkMeta(guidedState.framework).label : ""}` }));
     if (!results.length) {
-      body.appendChild(el("p", { class: "kit-hint", text: "No samples match that. Try describing the capability differently (e.g. “remember past chats”, “let a human approve”, “connect my own tools”), or clear the box to use the guided questions." }));
+      body.appendChild(el("p", { class: "kit-hint", text: "No samples matched your keywords." }));
+      body.appendChild(el("div", { class: "smart-cta" }, [
+        el("p", { class: "smart-cta-text", html: "Let a deployed <b>Foundry agent</b> read the whole catalog and find the best match for you." }),
+        el("button", {
+          class: "btn btn-primary smart-cta-btn", type: "button",
+          onclick: () => { guidedState.smart = true; runSmartSearch(guidedState.q); },
+          html: "✨ Ask the Foundry agent",
+        }),
+      ]));
+      body.appendChild(el("p", { class: "kit-hint", text: "…or try different words (e.g. “remember past chats”, “let a human approve”, “connect my own tools”), or clear the box to use the guided questions." }));
     } else {
       const list = el("div", { class: "kit-list" });
       results.forEach((entry, i) => list.appendChild(kitSampleCard(entry, {

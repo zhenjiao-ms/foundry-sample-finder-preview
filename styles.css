@@ -475,6 +475,15 @@ main.wrap { padding-top: 26px; padding-bottom: 40px; min-height: 50vh; }
 .smart-badge.err { background: #b45309; }
 .btn-primary { background: var(--accent); color: #fff; border-color: var(--accent-dark); }
 .btn-primary:hover { background: var(--accent-dark); }
+.smart-cta {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 10px;
+  margin: 14px 0 8px; padding: 16px 18px;
+  border: 1.5px dashed var(--accent); border-radius: var(--radius);
+  background: var(--accent-soft);
+}
+.smart-cta-text { margin: 0; font-size: 14px; color: var(--text); }
+.smart-cta-text b { color: var(--accent-dark); }
+.smart-cta-btn { font-size: 14px; padding: 9px 16px; }
 .guided-crumbs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
 .crumb { border: 1px solid var(--border); background: var(--surface); border-radius: 999px; padding: 4px 12px; font-size: 12.5px; color: var(--text-muted); cursor: pointer; }
 .crumb:hover { border-color: var(--accent); color: var(--accent); }
