@@ -4,48 +4,36 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Foundry Hosted-Agent Sample Finder</title>
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css?v=20260718a" />
 </head>
 <body>
-  <header class="app-header">
+  <header class="app-header slim">
     <div class="wrap">
       <div class="brand">
         <span class="brand-mark" aria-hidden="true">◆</span>
-        <div>
-          <h1>Hosted-Agent Sample Finder</h1>
-          <p class="tagline">Start from a Foundry base agent and stack building blocks — each shows which frameworks already have a sample.</p>
-        </div>
+        <span class="brand-name">Foundry Hosted-Agent Sample Finder</span>
       </div>
     </div>
   </header>
 
-  <nav class="tabs wrap" role="tablist" aria-label="Views">
-    <button class="tab" id="tab-guide" role="tab" aria-selected="true" data-view="guide">Guide me</button>
-    <button class="tab" id="tab-browse" role="tab" aria-selected="false" data-view="browse">Browse all samples</button>
-  </nav>
-
   <main class="wrap">
-    <!-- Guide (building-blocks) view -->
-    <section id="view-guide" class="view" aria-labelledby="tab-guide">
-      <div id="guideTree" class="guide-tree"></div>
-    </section>
-
-    <!-- Browse view -->
-    <section id="view-browse" class="view" hidden aria-labelledby="tab-browse">
-      <div class="filters">
-        <input type="search" id="search" class="search" placeholder="Search samples (title, description, tags)…" aria-label="Search samples" />
-        <div class="filter-selects">
-          <label>Framework <select id="f-framework"></select></label>
-          <label>Protocol <select id="f-protocol"></select></label>
-          <label>Category <select id="f-category"></select></label>
-          <label>Level <select id="f-level"></select></label>
-          <button id="btnClearFilters" class="btn btn-ghost btn-sm">Clear</button>
+    <section id="view-home" class="view home" aria-label="Find a hosted-agent sample">
+      <div class="home-hero">
+        <h1 class="home-title">What should your hosted agent do?</h1>
+        <p class="home-sub">Describe it and get a runnable Azure AI Foundry hosted-agent sample to start from.</p>
+        <div class="home-search">
+          <span class="home-search-icon" aria-hidden="true">🔍</span>
+          <input type="search" id="search" class="home-search-input" placeholder="Describe your goal, or some keywords…" aria-label="Describe your goal or search samples" autocomplete="off" />
+          <button id="btnClear" class="home-search-clear" type="button" hidden aria-label="Clear search">✕</button>
+          <button id="btnSmart" class="home-smart-btn" type="button" title="Let a deployed Foundry agent pick the best-fit sample">✨ Smart search</button>
         </div>
       </div>
-      <p class="browse-count" id="browseCount" aria-live="polite"></p>
-      <div id="browseGrid" class="card-grid"></div>
+      <div id="homeMain" class="home-main" aria-live="polite"></div>
     </section>
   </main>
+
+  <div id="smartScrim" class="smart-scrim" hidden></div>
+  <aside id="smartPanel" class="smart-panel" hidden aria-label="Best-fit samples"></aside>
 
   <footer class="app-footer wrap">
     <p>
@@ -58,6 +46,21 @@
   <!-- These generated shims let the page work when opened directly via file://. -->
   <script src="data/samples.js"></script>
   <script src="data/tree.js"></script>
-  <script src="app.js"></script>
+  <!--
+    Smart search backend selection:
+    - On localhost, use the local dev proxy (tools/smart-search-proxy.py, :8178).
+    - On any deployed host, use the cloud Functions proxy (managed identity).
+    Either way, app.js falls back to offline keyword search if it's unreachable.
+  -->
+  <script>
+    (function () {
+      var host = location.hostname;
+      var isLocal = host === "localhost" || host === "127.0.0.1" || host === "";
+      if (!isLocal) {
+        window.SF_SMART_PROXY = "https://sample-finder-proxy-dz098b.azurewebsites.net/api";
+      }
+    })();
+  </script>
+  <script src="app.js?v=20260718a"></script>
 </body>
 </html>

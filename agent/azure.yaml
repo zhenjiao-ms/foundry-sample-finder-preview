@@ -1,0 +1,64 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
+
+requiredVersions:
+    extensions:
+        azure.ai.agents: '>=1.0.0-beta.4'
+name: agent-framework-agent-basic-responses
+services:
+    agent-framework-agent-basic-responses:
+        project: src/agent-framework-agent-basic-responses
+        host: azure.ai.agent
+        language: python
+        uses:
+            - ai-project
+        codeConfiguration:
+            dependencyResolution: remote_build
+            entryPoint: main.py
+            runtime: python_3_13
+        container:
+            resources:
+                cpu: "0.5"
+                memory: 1Gi
+        description: Given a developer's natural-language description of what they want to build with Azure AI Foundry hosted agents, recommends the single best-matching sample from the Foundry hosted-agent sample catalog, plus a few alternates, as compact JSON.
+        environmentVariables:
+            - name: AZURE_AI_MODEL_DEPLOYMENT_NAME
+              value: ${AZURE_AI_MODEL_DEPLOYMENT_NAME}
+        kind: hosted
+        metadata:
+            tags:
+                - Agent Framework
+                - AI Agent Hosting
+                - Azure AI AgentServer
+                - Responses Protocol
+                - Streaming
+        name: agent-framework-agent-basic-responses
+        protocols:
+            - protocol: responses
+              version: 2.0.0
+    ai-project:
+        project: ""
+        host: azure.ai.project
+        language: ""
+        deployments:
+            - model:
+                format: OpenAI
+                name: gpt-4.1
+                version: "2025-04-14"
+              name: gpt-4.1
+              sku:
+                capacity: 10
+                name: GlobalStandard
+infra:
+    provider: microsoft.foundry
+
+# Keep the agent's bundled sample catalog in sync with the website's source of
+# truth (data/samples.json) before each package/deploy. The agent renders its
+# CATALOG prompt from this JSON at runtime.
+hooks:
+    prepackage:
+        posix:
+            shell: sh
+            run: python3 scripts/sync_samples.py
+        windows:
+            shell: pwsh
+            run: python scripts/sync_samples.py
