@@ -462,6 +462,15 @@ main.wrap { padding-top: 26px; padding-bottom: 40px; min-height: 50vh; }
   background: var(--accent-soft); border: 1px solid var(--border); border-radius: 999px; padding: 2px 10px;
 }
 /* smart search (Foundry-agent-backed) */
+.smart-panel {
+  margin: 0 0 24px; padding: 16px 18px;
+  border: 1px solid var(--border); border-radius: var(--radius);
+  background: var(--surface);
+}
+.smart-panel .guided-search { margin-bottom: 12px; }
+.smart-panel .smart-toggle { margin-bottom: 0; }
+.smart-panel .smart-body-host:not(:empty) { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); }
+.browse-smart { margin-bottom: 4px; }
 .smart-toggle { display: inline-flex; align-items: center; gap: 8px; margin: 2px 0 16px; cursor: pointer; user-select: none; }
 .smart-toggle input { width: 15px; height: 15px; cursor: pointer; }
 .smart-toggle-text { font-size: 13px; color: var(--text-muted); }
