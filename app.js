@@ -309,6 +309,13 @@ function renderGuide() {
     ])
   );
 
+  /* Smart search — ask the Foundry agent (or offline keyword search) */
+  host.appendChild(smartSearchPanel(smartStates.guide, {
+    rerender: renderGuide,
+    framework: null,
+    inputId: "smart-input-guide",
+  }));
+
   const stack = el("div", { class: "stack" });
   stack.appendChild(blockCard(state.tree.base, { base: true }));
 
@@ -379,12 +386,24 @@ function renderBrowse() {
   for (const s of results) grid.appendChild(sampleCard(s));
 }
 
+/* Mount the reusable Smart-search panel into the Browse view. Rendered
+ * independently of the grid so filter/search changes never rebuild it. */
+function renderBrowseSmart() {
+  const host = document.getElementById("browseSmart");
+  if (!host) return;
+  host.innerHTML = "";
+  host.appendChild(smartSearchPanel(smartStates.browse, {
+    rerender: renderBrowseSmart,
+    framework: null,
+    inputId: "smart-input-browse",
+  }));
+}
+
 function wireBrowse() {
   document.getElementById("search").addEventListener("input", (e) => {
     browseState.q = e.target.value;
     renderBrowse();
-  });
-  const bind = (id, key) =>
+  });  const bind = (id, key) =>
     document.getElementById(id).addEventListener("change", (e) => {
       browseState[key] = e.target.value;
       renderBrowse();
@@ -481,7 +500,12 @@ function renderCompose() {
     ])
   );
 
-  /* Step 1 — framework (single-select) */
+  /* Smart search — ask the Foundry agent (or offline keyword search) */
+  host.appendChild(smartSearchPanel(smartStates.compose, {
+    rerender: renderCompose,
+    framework: composeState.framework,
+    inputId: "smart-input-compose",
+  }));
   const fwRow = el("div", { class: "chip-row" });
   frameworkChoices().forEach((f) => {
     const active = composeState.framework === f.key;
@@ -959,6 +983,186 @@ function renderGuided(opts = {}) {
   restoreFocus();
 }
 
+/* ================================================================
+ * Reusable Smart-search panel (shared by Compose, Building blocks, Browse)
+ * Mirrors the Guided tab's behaviour: a search box + "Smart search" toggle.
+ *   - toggle OFF -> live offline keyword search (guidedSearch)
+ *   - toggle ON  -> ask the deployed Foundry agent (via the proxy)
+ * Each tab keeps its own independent state so switching tabs never bleeds
+ * one search into another. Offline typing repaints only the results area
+ * (no full re-render) so the input keeps focus.
+ * ================================================================ */
+function newSmartState() {
+  return { q: "", on: false, status: "idle", data: null, q0: "", error: "" };
+}
+const smartStates = {
+  compose: newSmartState(),
+  guide: newSmartState(),
+  browse: newSmartState(),
+};
+
+/* Core call to the Foundry agent through the proxy. */
+async function askAgentRaw(query, framework) {
+  const ask = framework
+    ? `${query} — using the ${sdkMeta(framework).label} framework`
+    : query;
+  const resp = await fetch(`${SMART_PROXY_BASE}/search?q=${encodeURIComponent(ask)}`, { method: "GET" });
+  if (!resp.ok) throw new Error(`proxy returned HTTP ${resp.status}`);
+  const data = await resp.json();
+  return { matches: data.matches || [], understood: data.understood || [] };
+}
+
+/* Run a smart search into an arbitrary state object, re-rendering around it. */
+async function runSmartFor(ss, query, rerender, framework) {
+  const q = (query || "").trim();
+  if (q.length < 2) return;
+  ss.status = "loading";
+  ss.q0 = q;
+  ss.error = "";
+  ss.data = null;
+  rerender();
+  try {
+    ss.data = await askAgentRaw(q, framework);
+    ss.status = "ok";
+  } catch (e) {
+    ss.status = "error";
+    ss.error = String((e && e.message) || e);
+  }
+  rerender();
+}
+
+/* Build the results area for a smart-search state (agent or offline). */
+function smartResultsBody(ss, opts) {
+  const framework = opts.framework || null;
+  /* SMART MODE — results come from the Foundry hosted agent */
+  if (ss.on) {
+    const body = el("div", { class: "guided-body" });
+    if (ss.status === "loading") {
+      body.appendChild(el("div", { class: "smart-badge", html: "⚡ Asking the Foundry agent…" }));
+      body.appendChild(el("p", { class: "kit-hint", text: `“${ss.q0}”` }));
+    } else if (ss.status === "error") {
+      body.appendChild(el("div", { class: "smart-badge err", html: "⚠️ Couldn’t reach the Foundry agent" }));
+      body.appendChild(el("p", { class: "kit-hint", html: `The smart-search proxy isn’t responding (<code>${ss.error}</code>). Start it with <code>python tools/smart-search-proxy.py</code> (after <code>az login</code>), or turn off Smart search to use the offline finder.` }));
+      const { results } = guidedSearch(ss.q0 || ss.q);
+      if (results.length) {
+        body.appendChild(el("p", { class: "guided-alts-label", text: "Meanwhile, the offline finder suggests:" }));
+        const list = el("div", { class: "kit-list" });
+        results.slice(0, 4).forEach((entry, i) => list.appendChild(kitSampleCard(entry, { recommended: i === 0, blockLabel: state.meta.categories[entry.sample.category] || entry.sample.category, showFw: !framework })));
+        body.appendChild(list);
+      }
+    } else if (ss.status === "ok" && ss.data) {
+      const { matches, understood } = ss.data;
+      body.appendChild(el("div", { class: "smart-badge", html: "⚡ Picked by your Foundry hosted agent" }));
+      if (understood.length) {
+        body.appendChild(el("div", { class: "understood" }, [
+          el("span", { class: "understood-label", text: "Understood as:" }),
+          ...understood.map((l) => el("span", { class: "understood-chip", text: l })),
+        ]));
+      }
+      const entries = matches.map((m) => { const s = sampleById(m.id); return s ? { sample: s, note: m.why } : null; }).filter(Boolean);
+      if (!entries.length) {
+        body.appendChild(el("p", { class: "kit-hint", text: "The agent didn’t find a matching sample for that. Try describing the capability differently." }));
+      } else {
+        const list = el("div", { class: "kit-list" });
+        entries.forEach((entry, i) => list.appendChild(kitSampleCard(entry, { recommended: i === 0, blockLabel: state.meta.categories[entry.sample.category] || entry.sample.category, showFw: !framework })));
+        body.appendChild(list);
+      }
+    } else {
+      body.appendChild(el("p", { class: "kit-hint", text: "Type what you want to build and press Enter (or “Ask agent”). A deployed Foundry agent reads the whole catalog and picks the best sample." }));
+    }
+    return body;
+  }
+  /* OFFLINE MODE — live keyword search, only when there's a query */
+  if ((ss.q || "").trim().length >= 2) {
+    const { results, labels } = guidedSearch(ss.q);
+    const body = el("div", { class: "guided-body" });
+    if (labels.length) {
+      body.appendChild(el("div", { class: "understood" }, [
+        el("span", { class: "understood-label", text: "Understood as:" }),
+        ...labels.map((l) => el("span", { class: "understood-chip", text: l })),
+      ]));
+    }
+    body.appendChild(el("p", { class: "guided-alts-label", text: `${results.length} ${results.length === 1 ? "match" : "matches"}` }));
+    if (!results.length) {
+      body.appendChild(el("p", { class: "kit-hint", text: "No samples matched your keywords." }));
+      body.appendChild(el("div", { class: "smart-cta" }, [
+        el("p", { class: "smart-cta-text", html: "Let a deployed <b>Foundry agent</b> read the whole catalog and find the best match for you." }),
+        el("button", {
+          class: "btn btn-primary smart-cta-btn", type: "button",
+          onclick: () => { ss.on = true; runSmartFor(ss, ss.q, opts.rerender, framework); },
+          html: "✨ Ask the Foundry agent",
+        }),
+      ]));
+    } else {
+      const list = el("div", { class: "kit-list" });
+      results.forEach((entry, i) => list.appendChild(kitSampleCard(entry, { recommended: i === 0, blockLabel: state.meta.categories[entry.sample.category] || entry.sample.category, showFw: !framework })));
+      body.appendChild(list);
+    }
+    return body;
+  }
+  return null;
+}
+
+/* Build the whole smart-search widget (box + toggle + results) for a tab.
+ * opts: { rerender, framework, inputId }
+ *   rerender() rebuilds the panel (used by the toggle / agent calls). */
+function smartSearchPanel(ss, opts) {
+  const framework = opts.framework || null;
+  const wrap = el("div", { class: "smart-panel" });
+
+  const bodyHost = el("div", { class: "smart-body-host" });
+  const paint = () => { bodyHost.innerHTML = ""; const b = smartResultsBody(ss, opts); if (b) bodyHost.appendChild(b); };
+
+  const input = el("input", {
+    type: "search",
+    class: "search",
+    id: opts.inputId || null,
+    value: ss.q,
+    placeholder: ss.on
+      ? "✨ Ask the Foundry agent — describe what you want to build, then press Enter"
+      : "🔎 Search samples — or flip on Smart search to let the Foundry agent pick",
+    "aria-label": "Smart search samples",
+    oninput: (e) => {
+      ss.q = e.target.value;
+      if (ss.on) return; // smart mode searches on submit, not per keystroke
+      paint(); // offline: repaint only the results, keep input focus
+    },
+    onkeydown: (e) => {
+      if (ss.on && e.key === "Enter") { e.preventDefault(); runSmartFor(ss, ss.q, opts.rerender, framework); }
+    },
+  });
+  const row = el("div", { class: "guided-search" }, [input]);
+  if (ss.on) {
+    row.appendChild(el("button", {
+      class: "btn btn-primary btn-sm", type: "button",
+      onclick: () => runSmartFor(ss, ss.q, opts.rerender, framework),
+      text: ss.status === "loading" ? "Asking…" : "Ask agent",
+    }));
+  }
+  if (framework) {
+    row.appendChild(el("span", { class: "guided-search-scope", text: `within ${sdkMeta(framework).label}` }));
+  }
+  wrap.appendChild(row);
+
+  wrap.appendChild(el("label", { class: "smart-toggle" }, [
+    el("input", {
+      type: "checkbox", checked: ss.on ? "checked" : null,
+      onchange: (e) => {
+        ss.on = e.target.checked;
+        ss.status = "idle";
+        ss.data = null;
+        ss.error = "";
+        opts.rerender();
+      },
+    }),
+    el("span", { class: "smart-toggle-text", html: "✨ <b>Smart search</b> — let a deployed Foundry agent pick the sample" }),
+  ]));
+
+  paint();
+  wrap.appendChild(bodyHost);
+  return wrap;
+}
+
 /* ---------- tabs ---------- */
 const VIEWS = ["compose", "guided", "guide", "browse"];
 function setView(view) {
@@ -968,7 +1172,7 @@ function setView(view) {
     const sec = document.getElementById("view-" + v);
     if (sec) sec.hidden = v !== view;
   });
-  if (view === "browse") renderBrowse();
+  if (view === "browse") { renderBrowseSmart(); renderBrowse(); }
   else if (view === "compose") renderCompose();
   else if (view === "guided") renderGuided();
   else if (view === "guide") renderGuide();
