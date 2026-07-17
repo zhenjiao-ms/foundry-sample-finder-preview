@@ -1,0 +1,39 @@
+name: Deploy branch preview to GitHub Pages
+
+# Publishes every non-main branch to a subfolder named after the branch, e.g.
+#   https://<owner>.github.io/<repo>/<branchname>/
+# All previews live alongside the main site on the shared gh-pages branch.
+
+on:
+  push:
+    branches-ignore:
+      - main
+      - gh-pages
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+# One preview deploy per branch at a time.
+concurrency:
+  group: pages-preview-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  deploy-preview:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Publish preview to gh-pages/<branch>
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          # Zero-build static site: publish the repo root as-is.
+          publish_dir: .
+          # Subfolder = branch name (slashes become nested folders).
+          destination_dir: ${{ github.ref_name }}
+          # Don't wipe the root site or other branch previews.
+          keep_files: true
+          commit_message: "preview: deploy ${{ github.ref_name }} (${{ github.sha }})"

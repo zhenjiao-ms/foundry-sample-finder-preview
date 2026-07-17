@@ -1,40 +1,35 @@
-name: Deploy to GitHub Pages
+name: Deploy main to GitHub Pages
+
+# Publishes the main branch to the site root on the shared gh-pages branch:
+#   https://<owner>.github.io/<repo>/
+# Branch previews (see preview-pages.yml) live in per-branch subfolders and are
+# preserved here via keep_files.
 
 on:
   push:
     branches: [main]
   workflow_dispatch:
 
-# Allow the workflow to publish to GitHub Pages.
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 
-# Only one concurrent deployment; don't cancel an in-progress one.
 concurrency:
-  group: pages
+  group: pages-main
   cancel-in-progress: false
 
 jobs:
   deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Configure Pages
-        uses: actions/configure-pages@v5
-
-      - name: Upload static site
-        uses: actions/upload-pages-artifact@v3
+      - name: Publish site root to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
         with:
-          # This is a zero-build static site; publish the repo root as-is.
-          path: .
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          # Zero-build static site: publish the repo root as-is.
+          publish_dir: .
+          # Keep per-branch preview subfolders when refreshing the root site.
+          keep_files: true
+          commit_message: "deploy: main (${{ github.sha }})"
