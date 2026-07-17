@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Foundry Hosted-Agent Sample Finder</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="app-header">
+    <div class="wrap">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">◆</span>
+        <div>
+          <h1>Hosted-Agent Sample Finder</h1>
+          <p class="tagline">Start from a Foundry base agent and stack building blocks — each shows which frameworks already have a sample.</p>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <nav class="tabs wrap" role="tablist" aria-label="Views">
+    <button class="tab" id="tab-guide" role="tab" aria-selected="true" data-view="guide">Guide me</button>
+    <button class="tab" id="tab-browse" role="tab" aria-selected="false" data-view="browse">Browse all samples</button>
+  </nav>
+
+  <main class="wrap">
+    <!-- Guide (building-blocks) view -->
+    <section id="view-guide" class="view" aria-labelledby="tab-guide">
+      <div id="guideTree" class="guide-tree"></div>
+    </section>
+
+    <!-- Browse view -->
+    <section id="view-browse" class="view" hidden aria-labelledby="tab-browse">
+      <div class="filters">
+        <input type="search" id="search" class="search" placeholder="Search samples (title, description, tags)…" aria-label="Search samples" />
+        <div class="filter-selects">
+          <label>Framework <select id="f-framework"></select></label>
+          <label>Protocol <select id="f-protocol"></select></label>
+          <label>Category <select id="f-category"></select></label>
+          <label>Level <select id="f-level"></select></label>
+          <button id="btnClearFilters" class="btn btn-ghost btn-sm">Clear</button>
+        </div>
+      </div>
+      <p class="browse-count" id="browseCount" aria-live="polite"></p>
+      <div id="browseGrid" class="card-grid"></div>
+    </section>
+  </main>
+
+  <footer class="app-footer wrap">
+    <p>
+      Data mirrors <code id="sourceRepo">microsoft-foundry/foundry-samples</code> ·
+      <a id="rootLink" href="#" target="_blank" rel="noopener">open the samples folder ↗</a>
+    </p>
+  </footer>
+
+  <!-- Canonical data is data/*.json (consumed by the VS Code extension). -->
+  <!-- These generated shims let the page work when opened directly via file://. -->
+  <script src="data/samples.js"></script>
+  <script src="data/tree.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
