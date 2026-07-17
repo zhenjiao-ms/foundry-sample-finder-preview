@@ -38,8 +38,10 @@ def _load_samples() -> list[dict]:
     if env_path:
         candidates.append(Path(env_path))
     candidates.append(here / "samples.json")
-    # agent/src/<agent>/ -> repo root -> data/samples.json
-    candidates.append(here.parents[2] / "data" / "samples.json")
+    # agent/src/<agent>/ -> repo root -> data/samples.json (local repo runs only;
+    # in the container main.py sits at /app so there is no such ancestor).
+    if len(here.parents) >= 3:
+        candidates.append(here.parents[2] / "data" / "samples.json")
 
     for path in candidates:
         try:
