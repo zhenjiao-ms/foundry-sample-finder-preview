@@ -77,6 +77,130 @@ function repoUrl(sample) {
   return state.meta.repoBaseUrl + sample.path;
 }
 
+/* ---------- "run this sample" actions ---------- */
+const DOCS_QUICKSTART = "https://learn.microsoft.com/azure/ai-foundry/agents/concepts/hosted-agents";
+const FOUNDRY_PORTAL = "https://ai.azure.com/";
+
+/* azd `--runtime` short language token for the sample. */
+function codeLang(sample) {
+  return sample.language === "csharp" ? "dotnet" : "python";
+}
+
+/* The `azd ai agent init -m <url>` argument. Latest azd accepts the sample's
+ * GitHub folder URL directly — no agent.manifest.yaml file is required. */
+function initSampleUrl(sample) {
+  return repoUrl(sample);
+}
+
+/* UTF-8-safe base64 (btoa alone breaks on non-ASCII). */
+function b64utf8(str) {
+  return btoa(unescape(encodeURIComponent(str)));
+}
+
+/* Build a generic vscode.dev "create hosted agent" deep link. We intentionally
+ * embed only the sample reference (+ optional entry file) and let the visitor
+ * pick their own tenant/subscription/project inside VS Code — no personal IDs. */
+function vscodeCreatePayload(sample) {
+  const variables = {
+    agentType: "hostedAgent",
+    agentManifestUrl: initSampleUrl(sample),
+  };
+  if (sample.runFile) variables.runFilePath = sample.runFile;
+  return {
+    baseUrl: "https://ai.azure.com/modelcache",
+    indexUrl: "/agents/code/en/createHostedAgent-package/index.json",
+    codeRoute: ["azd", codeLang(sample)],
+    variables,
+  };
+}
+function vscodeUrl(sample) {
+  const payload = b64utf8(JSON.stringify(vscodeCreatePayload(sample)));
+  const q = new URLSearchParams({
+    "vscode-azure-exp": "foundry",
+    "az-referer": "sample-finder",
+  });
+  return `https://vscode.dev/azure/?${q.toString()}&createHostedAgentPayload=${payload}`;
+}
+
+/* One row of actions shared by every sample card. */
+function sampleActions(sample) {
+  return el("div", { class: "card-actions" }, [
+    el("a", { class: "action-link", href: repoUrl(sample), target: "_blank", rel: "noopener", text: "Open on GitHub ↗" }),
+    el("button", {
+      class: "action-btn",
+      type: "button",
+      title: "Show the azd commands to scaffold and deploy this sample",
+      onclick: () => openCodeDialog(sample),
+    }, "⚡ Code an agent"),
+    el("a", { class: "action-link", href: vscodeUrl(sample), target: "_blank", rel: "noopener", title: "Open VS Code for the Web and scaffold this sample", text: "Open in VS Code ↗" }),
+  ]);
+}
+
+/* ---------- "Code an agent" modal ---------- */
+function copyRow(cmd) {
+  const code = el("code", { text: cmd });
+  const btn = el("button", { class: "copy-btn", type: "button", title: "Copy", "aria-label": "Copy command" }, "⧉");
+  btn.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(cmd);
+      const old = btn.textContent;
+      btn.textContent = "✓";
+      setTimeout(() => { btn.textContent = old; }, 1200);
+    } catch { /* clipboard blocked — no-op */ }
+  });
+  return el("div", { class: "code-cmd" }, [code, btn]);
+}
+
+function codeStep(n, title, node, note) {
+  return el("div", { class: "code-step" }, [
+    el("h4", {}, [el("span", { class: "code-step-n", text: String(n) }), " " + title]),
+    note ? el("p", { class: "code-step-note", html: note }) : null,
+    node,
+  ]);
+}
+
+let codeDialogEl = null;
+function closeCodeDialog() {
+  if (codeDialogEl) { codeDialogEl.remove(); codeDialogEl = null; }
+  document.removeEventListener("keydown", onCodeDialogKey);
+}
+function onCodeDialogKey(e) { if (e.key === "Escape") closeCodeDialog(); }
+
+function openCodeDialog(sample) {
+  closeCodeDialog();
+  const runtime = codeLang(sample) === "dotnet" ? "dotnet_10" : "python_3_13";
+  const entry = sample.runFile ? sample.runFile.split("/").pop() : "main.py";
+  const initCmd = `azd ai agent init -m "${initSampleUrl(sample)}" --deploy-mode code --runtime ${runtime} --entry-point ${entry}`;
+
+  const dialog = el("div", { class: "modal", role: "dialog", "aria-modal": "true", "aria-label": "Code an agent" }, [
+    el("button", { class: "modal-close", type: "button", "aria-label": "Close", onclick: closeCodeDialog }, "✕"),
+    el("h2", { class: "modal-title", text: "Code an agent" }),
+    el("p", { class: "modal-sub" }, [
+      `Scaffold, provision, and deploy `,
+      el("b", { text: sample.title }),
+      ` as a Foundry hosted agent with the Azure Developer CLI. `,
+      el("a", { href: DOCS_QUICKSTART, target: "_blank", rel: "noopener", text: "View quickstart guide ↗" }),
+    ]),
+    codeStep(1, "Install Azure Developer CLI", copyRow("winget install microsoft.azd"),
+      "Windows (winget). Requires <code>azd &gt;= 1.25.1</code> and the <code>azure.ai.agents</code> extension. macOS/Linux: see the docs."),
+    codeStep(2, "Initialize the agent from this sample", copyRow(initCmd),
+      "Pulls this sample's source into <code>src/&lt;project&gt;/</code> and appends the agent service to <code>azure.yaml</code>."),
+    codeStep(3, "Provision and deploy", copyRow("azd up"),
+      "Automatically provisions any missing Foundry resources, then deploys the agent."),
+    el("div", { class: "code-step" }, [
+      el("h4", {}, [el("span", { class: "code-step-n", text: "4" }), " See and chat with your new agent"]),
+      el("a", { class: "action-btn wide", href: FOUNDRY_PORTAL, target: "_blank", rel: "noopener", text: "Open Foundry portal ↗" }),
+    ]),
+  ]);
+
+  const overlay = el("div", { class: "modal-overlay", onclick: (e) => { if (e.target === overlay) closeCodeDialog(); } }, [dialog]);
+  document.body.appendChild(overlay);
+  codeDialogEl = overlay;
+  document.addEventListener("keydown", onCodeDialogKey);
+  const closeBtn = dialog.querySelector(".modal-close");
+  if (closeBtn) closeBtn.focus();
+}
+
 /* ---------- SDK helpers ---------- */
 function sdkMeta(key) {
   return (state.meta.sdks && state.meta.sdks[key]) || { label: key, short: key, color: "#888888" };
@@ -130,7 +254,7 @@ function sampleCard(sample) {
   );
   const foot = el("div", { class: "card-foot" }, [
     el("span", { class: "path", title: sample.path, text: sample.path }),
-    el("a", { class: "open-link", href: repoUrl(sample), target: "_blank", rel: "noopener", text: "Open on GitHub ↗" }),
+    sampleActions(sample),
   ]);
   return el("article", { class: "sample-card" }, [
     el("h3", { text: sample.title + (sample.kind === "client" ? " (client)" : "") }),
@@ -187,13 +311,14 @@ function familyCard(family) {
   // single-layer tile: capability title + in-card chips + the selected variant's fields
   const desc = el("p", { class: "desc" });
   const path = el("span", { class: "path" });
-  const link = el("a", { class: "open-link", target: "_blank", rel: "noopener", text: "Open on GitHub ↗" });
-  const foot = el("div", { class: "card-foot" }, [path, link]);
+  const actions = el("div", { class: "card-actions-host" });
+  const foot = el("div", { class: "card-foot" }, [path, actions]);
   const fill = (sample) => {
     desc.textContent = sample.description || "";
     path.textContent = sample.path;
     path.title = sample.path;
-    link.href = repoUrl(sample);
+    actions.innerHTML = "";
+    actions.appendChild(sampleActions(sample));
   };
 
   const btnRow = el("div", { class: "variant-toggle", role: "tablist" });
@@ -540,7 +665,7 @@ function kitSampleCard(entry, opts = {}) {
     el("p", { class: "kit-card-desc", text: s.description || "" }),
     el("div", { class: "kit-card-foot" }, [
       el("span", { class: "path", title: s.path, text: s.path }),
-      el("a", { class: "open-link", href: repoUrl(s), target: "_blank", rel: "noopener", text: "Open on GitHub ↗" }),
+      sampleActions(s),
     ]),
   ]);
 }

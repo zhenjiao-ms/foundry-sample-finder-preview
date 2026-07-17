@@ -320,9 +320,63 @@ main.wrap { padding-top: 26px; padding-bottom: 40px; min-height: 50vh; }
 .badge.category { background: var(--surface-2); color: var(--text-muted); }
 .tags { display: flex; flex-wrap: wrap; gap: 6px; }
 .tag { font-size: 11.5px; color: var(--text-faint); background: var(--surface-2); padding: 2px 8px; border-radius: 6px; }
-.card-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 2px; }
+.card-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 2px; flex-wrap: wrap; }
 .card-foot .path { font-family: "Cascadia Code", "Consolas", monospace; font-size: 11.5px; color: var(--text-faint); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.card-foot .open-link { font-size: 13px; font-weight: 600; white-space: nowrap; }
+
+/* per-card actions: Open on GitHub · Code an agent · Open in VS Code */
+.card-actions, .card-actions-host { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.action-link { font-size: 12.5px; font-weight: 600; white-space: nowrap; }
+.action-btn {
+  font: inherit; font-size: 12.5px; font-weight: 600; white-space: nowrap; cursor: pointer;
+  color: var(--accent); background: var(--accent-soft);
+  border: 1px solid var(--border); border-radius: 999px; padding: 3px 10px;
+}
+.action-btn:hover { border-color: var(--accent); background: #fff; }
+.action-btn.wide { display: inline-block; padding: 8px 14px; border-radius: var(--radius-sm); }
+
+/* "Code an agent" modal */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(15, 23, 42, 0.5);
+  display: flex; align-items: flex-start; justify-content: center;
+  padding: 6vh 16px; overflow-y: auto;
+}
+.modal {
+  position: relative; width: 100%; max-width: 620px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.3); padding: 26px 28px 28px;
+}
+.modal-close {
+  position: absolute; top: 14px; right: 14px; width: 30px; height: 30px;
+  border: 1px solid var(--border); border-radius: 8px; background: var(--surface);
+  font-size: 15px; line-height: 1; color: var(--text-muted); cursor: pointer;
+}
+.modal-close:hover { border-color: var(--accent); color: var(--accent); }
+.modal-title { margin: 0 0 6px; font-size: 22px; }
+.modal-sub { margin: 0 0 20px; color: var(--text-muted); font-size: 13.5px; line-height: 1.5; }
+.code-step { margin-bottom: 18px; }
+.code-step h4 { margin: 0 0 6px; font-size: 14.5px; display: flex; align-items: center; gap: 8px; }
+.code-step-n {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 20px; height: 20px; border-radius: 50%; background: var(--accent); color: #fff;
+  font-size: 12px; font-weight: 700; flex: none;
+}
+.code-step-note { margin: 0 0 8px; color: var(--text-muted); font-size: 12.5px; line-height: 1.5; }
+.code-step-note code { background: var(--surface-2); padding: 1px 5px; border-radius: 4px; font-size: 11.5px; }
+.code-cmd {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-sm);
+  padding: 10px 12px;
+}
+.code-cmd code {
+  flex: 1; font-family: "Cascadia Code", "Consolas", monospace; font-size: 12.5px;
+  color: var(--text); overflow-x: auto; white-space: nowrap;
+}
+.copy-btn {
+  flex: none; width: 28px; height: 28px; border: 1px solid var(--border-strong);
+  border-radius: 6px; background: var(--surface); cursor: pointer; font-size: 13px; color: var(--text-muted);
+}
+.copy-btn:hover { border-color: var(--accent); color: var(--accent); }
 
 /* Buttons */
 .btn {
@@ -449,7 +503,8 @@ main.wrap { padding-top: 26px; padding-bottom: 40px; min-height: 50vh; }
 .kit-note { font-size: 11px; color: var(--text-muted); background: var(--bg); border-radius: 4px; padding: 1px 6px; }
 .kit-rec { font-size: 11px; font-weight: 700; color: var(--accent-dark); background: #fff; border: 1px solid var(--accent); border-radius: 999px; padding: 1px 8px; margin-left: auto; }
 .kit-card-desc { margin: 0; color: var(--text-muted); font-size: 13px; flex-grow: 1; }
-.kit-card-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 12px; }
+.kit-card-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 12px; flex-wrap: wrap; }
+.kit-card-foot .path { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 /* guided flow */
 .guided-search { display: flex; align-items: center; gap: 12px; margin: 0 0 18px; }
