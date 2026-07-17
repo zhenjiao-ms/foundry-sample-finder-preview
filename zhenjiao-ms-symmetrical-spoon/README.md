@@ -1,53 +1,55 @@
 # Foundry Hosted-Agent Sample Finder
 
-An interactive **decision tree** that turns the flat list of ~60 hosted-agent samples in [`microsoft-foundry/foundry-samples` → `samples/python/hosted-agents`](https://github.com/microsoft-foundry/foundry-samples/tree/main/samples/python/hosted-agents) into a few answerable questions, so users can find the right starting sample instead of scrolling a long list.
+▶️ **Try it live:** Want to try out the Hosted-Agent Sample Finder? Open it here — https://kimizhu.github.io/foundry-sample-finder-preview
+
+A single **blended finder** that turns the flat list of 60+ hosted-agent samples in [`microsoft-foundry/foundry-samples` → `samples/python/hosted-agents`](https://github.com/microsoft-foundry/foundry-samples/tree/main/samples/python/hosted-agents) into one page where you can search by keyword, browse by scenario, or describe your goal and let a Foundry agent pick — instead of scrolling a long list.
 
 Built as **plain static HTML/CSS/JS — no build step**. Double-click `index.html` to run it, or serve the folder (see below).
 
 ---
 
-## Why a decision tree?
+## Why one blended finder?
 
 ### The problem
 
 Microsoft Foundry ships **60+ hosted-agent samples** in a single folder of the [`foundry-samples`](https://github.com/microsoft-foundry/foundry-samples/tree/main/samples/python/hosted-agents) repo, and the VS Code extension surfaces every one of them as a **flat, alphabetical list**. For anyone who isn't already an expert, that list is a wall of near-identical, jargon-heavy folder names (`byo-inv-ag-ui`, `af-resp-basic`, `langgraph-invocations-hitl`…) with no signal about:
 
 - **Where to start** — which sample is the "hello world" versus a niche edge case.
-- **How samples relate** — that they actually vary along a few consistent axes (which framework you build on, how clients talk to the agent, what capability is being demonstrated).
+- **How samples relate** — that they actually cluster into a handful of real-world scenarios (tools & MCP, knowledge & memory, human-in-the-loop, multi-agent, voice…).
 - **What's even available** — the folder READMEs are partially out of date, so scanning them can *hide* samples rather than surface them.
 
 The result is classic **choice overload**: a new user opens the list, can't tell the options apart, and either picks the wrong starting point or abandons the sample gallery altogether. The very artifacts meant to accelerate adoption end up being a barrier to it.
 
 ### Why we built this
 
-The key insight is that the flat list isn't actually unstructured — it just *looks* that way. Every sample can be placed on the same small set of decisions, and the official docs already lead with two of them. This project makes that hidden structure **explicit and navigable**: instead of scrolling ~60 folders, you answer a few plain-language questions and are handed the sample(s) that fit.
+The key insight is that a newcomer shouldn't have to learn a taxonomy before they can find a sample — they should just say what they want to build. Earlier iterations exposed three separate ways to search (keyword filtering, scenario categories, and an AI "smart" search) as separate tabs. This version merges all three into **one blended page** that reveals information gradually instead of dumping everything at once. You land on a single question — *"What should your hosted agent do?"* — and choose your own depth:
 
-| Level | Question | Picks |
-|-------|----------|-------|
-| **1** | Where are you starting from? | **Framework** — Agent Framework · LangGraph · Bring Your Own |
-| **2** | How will clients interact with the agent? | **Protocol / channel** — Responses · Invocations · A2A · Activity |
-| **3** | What capability are you adding? | **Category theme** → a specific sample (or small set) |
+| If you… | You get… |
+|---------|----------|
+| Know a keyword | Type it — the catalog filters instantly across titles, tags, and descriptions |
+| Want to browse by scenario | Pick from a curated set of scenario cards (Just the basics, Tools/MCP & Skills, Knowledge/RAG & Memory, Human-in-the-Loop, Multi-Agent, Voice…), each showing its sample count, with **Show all** to reveal the full set |
+| Aren't sure what to search | Describe your goal in plain language and hit **✨ Smart search** — a deployed Foundry hosted agent reads the whole catalog and returns the best-fit samples, with the top pick marked **★ Recommended** and a one-line reason why each fits |
 
-The tree only ever offers branches that **actually have samples** for the choices you've made (e.g. the Teams/Activity channel is Agent-Framework only), so you can never walk down a path that dead-ends. Every leaf resolves to one or more **real samples** in the catalog.
+Every one of the 62 samples is mapped to exactly one scenario, so nothing is hidden and no path dead-ends. Each result links straight to the sample on GitHub, a one-click **⚡ Code an agent** flow (the `azd` commands to scaffold and deploy it), and **Open in VS Code** for the Web.
 
 ### What value it delivers
 
-- **Faster time-to-first-sample.** A newcomer goes from "60 folders, no idea" to a concrete, runnable sample in two or three clicks — no prior knowledge of the naming scheme required.
-- **Decision-making, not memorization.** Each level asks one thing in human terms and narrows the field, turning an overwhelming catalog into a short, guided conversation.
-- **No dead ends.** Because branches are pruned to what exists, users never hit an empty result or an unsupported combination.
-- **A safe default for the unsure.** Every question flags a **★ Recommended** option, so there's always an obvious path forward for people who just want the best place to start.
+- **Faster time-to-first-sample.** A newcomer goes from "60 folders, no idea" to a concrete, runnable sample in one search or two clicks — no prior knowledge of the naming scheme required.
+- **Progressive disclosure, not a wall.** The page starts with one search box and six curated scenarios; detail is revealed only as you ask for it, turning an overwhelming catalog into a short, guided experience.
+- **Describe-your-goal search.** When keywords fall short, the Foundry agent does the semantic matching for you and explains its picks — the same "smart" mechanism, now front and center.
+- **A safe default for the unsure.** Smart-search results flag a **★ Recommended** option, so there's always an obvious place to start.
 
 ---
 
 ## Files
 
 ```
-index.html          # shell: header, tabs, guide + browse views
+index.html          # shell: slim header + single landing (hero, search, scenario grid)
 styles.css          # light, card-based UI
-app.js              # vanilla-JS renderer (accordion guide + counts + browse/filter)
+app.js              # vanilla-JS renderer (landing, category grid + drill-in, smart-search panel)
 data/
-  samples.json      # canonical flat catalog (source of truth)
-  tree.json         # canonical decision graph (source of truth)
+  samples.json      # canonical flat catalog + meta.categoryList (source of truth)
+  tree.json         # canonical capability graph (source of truth; consumed by the VS Code extension)
   samples.js        # generated shim → window.HA_SAMPLES (for file://)
   tree.js           # generated shim → window.HA_TREE   (for file://)
 tools/
@@ -58,7 +60,7 @@ tools/
 
 Two JSON files under `data/`, kept separate so the catalog can power the browse view (and the VS Code extension) independently of the tree, and so a single leaf can recommend several samples.
 
-**`samples.json`** — `meta` (dictionaries for frameworks, protocols, categories, plus `repoBaseUrl`) and a flat `samples[]`:
+**`samples.json`** — `meta` (dictionaries for frameworks, protocols, categories, an ordered `categoryList` that drives the scenario grid, plus `repoBaseUrl`) and a flat `samples[]`:
 
 ```jsonc
 {
@@ -66,12 +68,13 @@ Two JSON files under `data/`, kept separate so the catalog can power the browse 
   "title": "Basic Agent",
   "framework": "agent-framework",   // key into meta.frameworks
   "protocol": "responses",           // key into meta.protocols
-  "category": "foundations",         // key into meta.categories
+  "category": "basics",              // key into meta.categories / meta.categoryList
   "level": "beginner",               // beginner | intermediate | advanced
   "kind": "agent",                   // agent | client
   "tags": ["chat", "multi-turn"],
   "path": "agent-framework/responses/01-basic",  // relative to rootPath
-  "description": "…"
+  "description": "…",
+  "runFile": "./src/…/main.py"       // entry point for the azd "Code an agent" flow
 }
 ```
 
