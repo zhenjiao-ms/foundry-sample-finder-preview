@@ -684,36 +684,38 @@ function sampleDoc(s) {
   };
 }
 
-/* free-text search over the building-block samples (52 with an sdk) */
+/* free-text search over the building-block samples (52 with an sdk)
+   Exact keyword match: tokenize the query and require EVERY typed term to
+   appear (as a substring) somewhere in the sample's text. This keeps offline
+   results precise and predictable; when nothing matches we hand off to Smart
+   search (the Foundry agent) which does the fuzzy/semantic understanding. */
 function guidedSearch(q) {
-  const { tokens, concepts, labels } = expandQuery(q);
+  const { labels } = expandQuery(q);
   const fw = guidedState.framework;
   const rank = (p) => { const i = PROTOCOL_ORDER.indexOf(p); return i === -1 ? 99 : i; };
+  const terms = (q || "")
+    .toLowerCase()
+    .split(/[^a-z0-9]+/)
+    .filter((t) => t && t.length >= 2 && !GUIDED_STOPWORDS.has(t));
+  if (!terms.length) return { results: [], labels };
   const scored = [];
   for (const s of state.samples) {
     if (!s.sdk) continue; // stay within the building-block universe
     if (fw && s.sdk !== fw) continue;
     const d = sampleDoc(s);
     let score = 0;
-    // intent concepts are the strong signal — they reflect what the user actually means
-    for (const c of concepts) {
-      if (!c) continue;
-      if (d.title.includes(c)) score += 8;
-      if (d.tags.includes(c)) score += 6;
-      if (d.block.includes(c)) score += 4;
-      if (d.cat.includes(c)) score += 4;
-      if (d.desc.includes(c)) score += 2;
+    let matchedAll = true;
+    for (const t of terms) {
+      let hit = 0;
+      if (d.title.includes(t)) hit += 10;
+      if (d.tags.includes(t)) hit += 6;
+      if (d.block.includes(t)) hit += 4;
+      if (d.cat.includes(t)) hit += 3;
+      if (d.desc.includes(t)) hit += 2;
+      if (hit === 0) { matchedAll = false; break; } // exact match: every term must appear
+      score += hit;
     }
-    // raw words the user typed are a weak, supporting signal
-    for (const t of tokens) {
-      if (!t) continue;
-      if (d.title.includes(t)) score += 2;
-      if (d.tags.includes(t)) score += 1.5;
-      if (d.block.includes(t)) score += 1;
-      if (d.cat.includes(t)) score += 1;
-      if (d.desc.includes(t)) score += 0.5;
-    }
-    if (score > 0) scored.push({ sample: s, score });
+    if (matchedAll) scored.push({ sample: s, score });
   }
   scored.sort((a, b) => b.score - a.score || rank(a.sample.protocol) - rank(b.sample.protocol));
   return { results: scored, labels };
