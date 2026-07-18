@@ -1215,7 +1215,7 @@ function setupFooter() {
  * disclosure), and agent-backed smart search. No tabs.
  * ================================================================ */
 const home = { q: "", mode: "grid", cat: null, showAll: false };
-const smart = { open: false, status: "idle", q0: "", data: null, error: "" };
+const smart = { status: "idle", q0: "", data: null, error: "" };
 
 function categoryList() {
   return (state.meta && state.meta.categoryList) || [];
@@ -1310,19 +1310,25 @@ function renderHomeMain() {
   const host = document.getElementById("homeMain");
   if (!host) return;
   host.innerHTML = "";
-  if (home.mode === "search") renderSearchView(host);
+  if (home.mode === "smart") renderSmartView(host);
+  else if (home.mode === "search") renderSearchView(host);
   else if (home.mode === "category") renderCategoryView(host);
   else renderCategoryGrid(host);
 }
 
-/* ---- smart search (right slide-in panel, agent-backed) ---- */
-function closeSmart() { smart.open = false; renderSmartPanel(); }
+/* ---- smart search (inline in the main window, agent-backed) ---- */
+function exitSmart() {
+  home.mode = home.q.trim() ? "search" : "grid";
+  renderHomeMain();
+}
 
 async function runSmart(q) {
   const query = (q || "").trim();
   if (query.length < 2) { const i = document.getElementById("search"); if (i) i.focus(); return; }
-  smart.open = true; smart.status = "loading"; smart.q0 = query; smart.error = ""; smart.data = null;
-  renderSmartPanel();
+  home.mode = "smart";
+  smart.status = "loading"; smart.q0 = query; smart.error = ""; smart.data = null;
+  renderHomeMain();
+  window.scrollTo({ top: 0, behavior: "smooth" });
   try {
     smart.data = await askAgentRaw(query, null);
     smart.status = "ok";
@@ -1330,64 +1336,58 @@ async function runSmart(q) {
     smart.status = "error";
     smart.error = String((e && e.message) || e);
   }
-  renderSmartPanel();
+  if (home.mode === "smart") renderHomeMain();
 }
 
-function renderSmartPanel() {
-  const panel = document.getElementById("smartPanel");
-  const scrim = document.getElementById("smartScrim");
-  if (!panel) return;
-  panel.hidden = !smart.open;
-  if (scrim) scrim.hidden = !smart.open;
-  panel.classList.toggle("open", smart.open);
-  if (!smart.open) { panel.innerHTML = ""; return; }
+function renderSmartView(host) {
+  host.appendChild(el("div", { class: "home-crumb" }, [
+    el("button", { class: "crumb-back", type: "button", text: "← All categories", onclick: exitSmart }),
+  ]));
 
   const nMatches = smart.status === "ok" && smart.data ? smart.data.matches.length : null;
-  panel.innerHTML = "";
-  panel.appendChild(el("div", { class: "smart-panel-head" }, [
-    el("div", {}, [
-      el("h2", { class: "smart-panel-title", text: "Best-fit samples" }),
-      el("p", { class: "smart-panel-sub", text: nMatches != null ? `${nMatches} ${nMatches === 1 ? "match" : "matches"}` : "" }),
-    ]),
-    el("button", { class: "smart-panel-close", type: "button", "aria-label": "Close", text: "✕", onclick: closeSmart }),
+  host.appendChild(el("div", { class: "home-section-head" }, [
+    el("h2", { class: "home-section-title", text: "✨ Best-fit samples" }),
+    el("span", { class: "home-section-count", text: nMatches != null ? countLabel(nMatches) : "" }),
+    el("p", { class: "home-section-blurb", text: `Smart search for “${smart.q0}”` }),
   ]));
-  const body = el("div", { class: "smart-panel-body" });
-  panel.appendChild(body);
 
   if (smart.status === "loading") {
-    body.appendChild(el("div", { class: "smart-loading" }, [
+    host.appendChild(el("div", { class: "smart-loading" }, [
       el("div", { class: "smart-spinner", "aria-hidden": "true" }),
       el("p", { text: `Asking the Foundry agent about “${smart.q0}”…` }),
     ]));
     return;
   }
   if (smart.status === "error") {
-    body.appendChild(el("div", { class: "smart-err" }, [
+    host.appendChild(el("div", { class: "smart-err" }, [
       el("p", { html: `⚠️ Couldn’t reach the Foundry agent (<code>${smart.error}</code>).` }),
       el("p", { class: "muted", text: "Showing keyword matches instead:" }),
     ]));
-    keywordResults(smart.q0).slice(0, 6).forEach((s) => body.appendChild(sampleCard(s)));
+    const grid = el("div", { class: "card-grid" });
+    keywordResults(smart.q0).slice(0, 6).forEach((s) => grid.appendChild(sampleCard(s)));
+    host.appendChild(grid);
     return;
   }
   if (smart.status === "ok" && smart.data) {
     const { matches, understood } = smart.data;
     const entries = matches.map((m) => { const s = sampleById(m.id); return s ? { sample: s, note: m.why } : null; }).filter(Boolean);
-    body.appendChild(el("div", { class: "smart-pick", text: "✨ Picked by your Foundry hosted agent" }));
     if (understood && understood.length) {
-      body.appendChild(el("div", { class: "understood" }, [
+      host.appendChild(el("div", { class: "understood" }, [
         el("span", { class: "understood-label", text: "Understood as:" }),
         ...understood.map((l) => el("span", { class: "understood-chip", text: l })),
       ]));
     }
     if (!entries.length) {
-      body.appendChild(el("p", { class: "muted", text: "The agent didn’t find a matching sample. Try describing the capability differently." }));
+      host.appendChild(el("p", { class: "muted", text: "The agent didn’t find a matching sample. Try describing the capability differently." }));
       return;
     }
-    entries.forEach((entry, i) => body.appendChild(kitSampleCard(entry, {
+    const grid = el("div", { class: "card-grid" });
+    entries.forEach((entry, i) => grid.appendChild(kitSampleCard(entry, {
       recommended: i === 0,
       blockLabel: categoryLabel(entry.sample.category),
       showFw: true,
     })));
+    host.appendChild(grid);
     return;
   }
 }
@@ -1425,9 +1425,7 @@ function wireHome() {
     home.showAll = false; setHash(""); applyHash(); input.focus();
   });
   document.getElementById("btnSmart").addEventListener("click", () => runSmart(home.q));
-  const scrim = document.getElementById("smartScrim");
-  if (scrim) scrim.addEventListener("click", closeSmart);
-  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && smart.open) closeSmart(); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && home.mode === "smart") exitSmart(); });
   window.addEventListener("hashchange", () => { if (home.mode !== "search") applyHash(); });
 }
 
