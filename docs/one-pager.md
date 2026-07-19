@@ -127,9 +127,6 @@ Faster time-to-first-sample and higher sample-gallery adoption. A newcomer goes 
 
 **Platform feedback or learnings**
 
-- Manifest is no longer needed in the latest `azd ai agent` create flow — simplified the VS Code Web hand-off payload.
-- Having the hosted agent return **structured, explainable** output (`matches` + `why`) was the key to a trustworthy UX; a raw ranked list alone wasn't enough.
-- The biggest UX win came from *removing* structure the user didn't need (tabs, a decision tree) and letting one search box + scenario cards + NL intent coexist.
 - **"Open in VS Code" doesn't install the latest version of `azd`** — the VS Code Web hand-off can land users on an older `azd`, causing friction in the create flow.
 - **Foundry skills worked perfectly** in creating a new hosted agent — the guided scaffold/deploy experience was a highlight.
 
@@ -143,8 +140,8 @@ Faster time-to-first-sample and higher sample-gallery adoption. A newcomer goes 
 
 - **Live app:** https://kimizhu.github.io/foundry-sample-finder-preview
 - **Code repository:** https://github.com/kimizhu/foundry-sample-finder-preview
-- Design notes, taxonomy, and build/data instructions: see the repo `README.md`.
+- Design notes, taxonomy, and build/data instructions: see [README.md](../README.md).
 
 **Optional notes for reviewers**
 
-The app is fully static and forkable — no install required to try it live. Smart search calls a deployed Foundry hosted agent; if it's unreachable during review, the experience gracefully falls back to keyword matches, and keyword/scenario browsing work entirely offline.
+This site is a **demo/prototype** meant to illustrate the experience — not a production surface. To make it real, the finder would need to be **merged into Foundry's existing entry points** (e.g. the VS Code extension's sample gallery and the Foundry portal's create flow) rather than living as a standalone site.
