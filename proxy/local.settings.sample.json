@@ -1,0 +1,15 @@
+# Local settings for `func start` (values are NOT secrets).
+# Copy to local.settings.json and adjust as needed. AzureWebJobsStorage is left
+# empty because the HTTP-only functions here don't need a storage backend for
+# local runs; set it to "UseDevelopmentStorage=true" (Azurite) if you add
+# storage-bound triggers.
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "",
+    "FUNCTIONS_WORKER_RUNTIME": "python",
+    "SF_AGENT_ENDPOINT": "https://zhenjiao-devtest-ncus-resource.services.ai.azure.com/api/projects/zhenjiao-devtest-ncus/agents/agent-framework-agent-basic-responses/endpoint/protocols/openai/responses?api-version=v1",
+    "SF_AGENT_MODEL": "agent-framework-agent-basic-responses",
+    "SF_TOKEN_SCOPE": "https://ai.azure.com/.default"
+  }
+}
